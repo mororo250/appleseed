@@ -955,8 +955,8 @@ def main():
 
     project = convert(tree)
 
-    asr.ProjectFileWriter().write(project, args.output_file,
-    asr.ProjectFileWriterOptions.OmitHandlingAssetFiles)
+    asr.ProjectFileWriter().write(project, args.output_file, 
+                                  asr.ProjectFileWriterOptions.OmitHandlingAssetFiles)
 
 if __name__ == '__main__':
     main()
