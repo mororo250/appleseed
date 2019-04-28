@@ -949,7 +949,7 @@ def main():
             filepath.attrib["value"] = os.path.join(os.path.dirname(args.input_file), filepath.attrib["value"])
 
     for child in tree.getroot():
-        filepath= child.find("string[@name='filename']")
+        filepath = child.find("string[@name='filename']")
         if filepath is not None:
             filepath.attrib["value"] = os.path.join(os.path.dirname(args.input_file), filepath.attrib["value"])
 
