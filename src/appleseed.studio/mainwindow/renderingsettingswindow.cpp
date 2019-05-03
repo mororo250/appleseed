@@ -451,7 +451,6 @@ namespace
 
             create_direct_link("spectrum_mode", "spectrum_mode", "rgb");
         }
-        
     };
 
     class FinalGeneralSettingsPanel
@@ -475,8 +474,6 @@ namespace
         {
             save_directly_linked_values(config);
         }
-
-
     };
 
     class InteractiveGeneralSettingsPanel
