@@ -179,7 +179,6 @@ class RenderingManager
 
     std::unique_ptr<renderer::TileCallbackCollectionFactory>      
                                                 m_tile_callback_factory;
-
     std::unique_ptr<renderer::MasterRenderer>   m_master_renderer;
     std::unique_ptr<QThread>                    m_master_renderer_thread;
 
