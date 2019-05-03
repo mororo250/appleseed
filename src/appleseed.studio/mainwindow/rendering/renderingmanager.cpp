@@ -38,6 +38,10 @@
 #include "mainwindow/statusbar.h"
 #include "mainwindow/progressbar.h"
 
+// appleseed.shared headers.
+#include "application/application.h"
+#include "application/progresstilecallback.h"
+
 // appleseed.renderer headers.
 #include "renderer/api/camera.h"
 #include "renderer/api/frame.h"
