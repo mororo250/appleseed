@@ -34,6 +34,7 @@
 #include "debug/tests/testwindow.h"
 #include "mainwindow/applicationsettingswindow.h"
 #include "mainwindow/falsecolorswindow.h"
+#include "mainwindow/progressbar.h"
 #include "mainwindow/project/projectmanager.h"
 #include "mainwindow/qtlogtarget.h"
 #include "mainwindow/rendering/renderingmanager.h"
@@ -143,6 +144,7 @@ class MainWindow
     std::vector<MinimizeButton*>                m_minimize_buttons;
 
     StatusBar                                   m_status_bar;
+    ProgressBar                                 m_progress_bar;
     std::unique_ptr<QtLogTarget>                m_log_target;
 
     renderer::ParamArray                        m_application_settings;

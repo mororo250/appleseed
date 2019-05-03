@@ -196,6 +196,7 @@ namespace
                 "  spectrum mode                 %s\n"
                 "  sampling mode                 %s\n"
                 "  rendering threads             %s\n"
+                "  maximum time rendering %sseconds\n" //Improve it
                 "  max average samples per pixel %s\n"
                 "  max fps                       %f\n"
                 "  collect performance stats     %s\n"
@@ -206,6 +207,9 @@ namespace
                 m_params.m_max_average_spp == numeric_limits<uint64>::max()
                     ? "unlimited"
                     : pretty_uint(m_params.m_max_average_spp).c_str(),
+                m_params.m_time_limit == numeric_limits<uint64>::max()
+                    ? "unlimited"
+                    : pretty_uint(m_params.m_time_limit).c_str(),
                 m_params.m_max_fps,
                 m_params.m_perf_stats ? "on" : "off",
                 m_params.m_luminance_stats ? "on" : "off");
@@ -222,13 +226,16 @@ namespace
 
         bool is_rendering() const override
         {
-            return m_job_queue.has_scheduled_or_running_jobs();
+            m_stopwatch.measure();
+            return (m_job_queue.has_scheduled_or_running_jobs() && static_cast<double>(m_params.m_time_limit) > m_stopwatch.get_seconds());
         }
 
         void start_rendering() override
         {
             assert(!is_rendering());
             assert(!m_job_queue.has_scheduled_or_running_jobs());
+
+            m_stopwatch.start();
 
             m_abort_switch.clear();
             m_buffer->clear();
@@ -299,6 +306,8 @@ namespace
 
         void pause_rendering() override
         {
+            m_stopwatch.pause();
+
             m_job_manager->pause();
 
             if (m_display_func.get())
@@ -365,6 +374,7 @@ namespace
             const Spectrum::Mode        m_spectrum_mode;
             const SamplingContext::Mode m_sampling_mode;
             const size_t                m_thread_count;       // number of rendering threads
+            const uint64                m_time_limit;         // maximum time that interactive renderer can keep running IMPROVE THIS 
             const uint64                m_max_average_spp;    // maximum average number of samples to compute per pixel
             const double                m_max_fps;            // maximum display frequency in frames/second
             const bool                  m_perf_stats;         // collect and print performance statistics?
@@ -374,6 +384,7 @@ namespace
               : m_spectrum_mode(get_spectrum_mode(params))
               , m_sampling_mode(get_sampling_context_mode(params))
               , m_thread_count(get_rendering_thread_count(params))
+              , m_time_limit(params.get_optional<uint64>("time_limit", numeric_limits<uint64>::max()))
               , m_max_average_spp(params.get_optional<uint64>("max_average_spp", numeric_limits<uint64>::max()))
               , m_max_fps(params.get_optional<double>("max_fps", 30.0))
               , m_perf_stats(params.get_optional<bool>("performance_statistics", false))
@@ -690,18 +701,20 @@ namespace
         SampleGeneratorVector                   m_sample_generators;
 
         typedef vector<SampleGeneratorJob*> SampleGeneratorJobVector;
-        SampleGeneratorJobVector                m_sample_generator_jobs;
+        SampleGeneratorJobVector                    m_sample_generator_jobs;
 
-        auto_release_ptr<ITileCallback>         m_tile_callback;
+        auto_release_ptr<ITileCallback>             m_tile_callback;
 
-        double                                  m_ref_image_avg_lum;
+        double                                      m_ref_image_avg_lum;
 
-        unique_ptr<DisplayFunc>                 m_display_func;
-        unique_ptr<boost::thread>               m_display_thread;
-        AbortSwitch                             m_display_thread_abort_switch;
+        mutable Stopwatch<DefaultWallclockTimer>    m_stopwatch;
 
-        unique_ptr<StatisticsFunc>              m_statistics_func;
-        unique_ptr<boost::thread>               m_statistics_thread;
+        unique_ptr<DisplayFunc>                     m_display_func;
+        unique_ptr<boost::thread>                   m_display_thread;
+        AbortSwitch                                 m_display_thread_abort_switch;
+
+        unique_ptr<StatisticsFunc>                  m_statistics_func;
+        unique_ptr<boost::thread>                   m_statistics_thread;
 
         void print_sample_generators_stats() const
         {
@@ -742,6 +755,15 @@ Dictionary ProgressiveFrameRendererFactory::get_params_metadata()
             .insert("unlimited", "true")
             .insert("label", "Max Average Samples Per Pixel")
             .insert("help", "Maximum number of average samples per pixel"));
+
+    metadata.dictionaries().insert(
+        "time_limit",
+        Dictionary()
+        .insert("type", "int")
+        .insert("default", "60")
+        .insert("unlimited", "true")
+        .insert("label", "Time Limit:")
+        .insert("help", "The maximum time the rendering can work"));
 
     return metadata;
 }

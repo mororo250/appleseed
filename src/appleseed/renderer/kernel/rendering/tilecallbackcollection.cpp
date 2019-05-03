@@ -84,7 +84,7 @@ namespace
             const size_t tile_y) override
         {
             for (auto i : m_callbacks)
-                i->on_tile_end(frame, tile_x, tile_y);
+                 i->on_tile_end(frame, tile_x, tile_y);
         }
 
         void on_progressive_frame_update(const Frame* frame) override

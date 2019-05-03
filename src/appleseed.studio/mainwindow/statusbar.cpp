@@ -47,6 +47,7 @@ StatusBar::StatusBar()
   : m_rendering_timer(nullptr)
   , m_timer_id(-1)
 {
+    setMaximumWidth(400);
 }
 
 void StatusBar::set_text(const string& text)

@@ -48,7 +48,7 @@ class SHAREDDLL ProgressTileCallbackFactory
   : public renderer::ITileCallbackFactory
 {
   public:
-    ProgressTileCallbackFactory(foundation::Logger& logger, const size_t pass_count);
+    ProgressTileCallbackFactory(foundation::Logger& logger, const renderer::ParamArray& params, double& progress);
 
     // Destructor.
     ~ProgressTileCallbackFactory() override;

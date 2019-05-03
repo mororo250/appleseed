@@ -36,10 +36,7 @@
 #include "mainwindow/rendering/rendertab.h"
 #include "mainwindow/rendering/renderwidget.h"
 #include "mainwindow/statusbar.h"
-
-// appleseed.shared headers.
-#include "application/application.h"
-#include "application/progresstilecallback.h"
+#include "mainwindow/progressbar.h"
 
 // appleseed.renderer headers.
 #include "renderer/api/camera.h"
@@ -118,10 +115,12 @@ namespace
     };
 }
 
-RenderingManager::RenderingManager(StatusBar& status_bar)
+RenderingManager::RenderingManager(StatusBar& status_bar, ProgressBar& progress_bar)
   : m_status_bar(status_bar)
+  , m_progress_bar(progress_bar)
   , m_project(nullptr)
   , m_render_tab(nullptr)
+  , m_progress(0.0)
 {
     Application::initialize_resource_search_paths(m_resource_search_paths);
 
@@ -211,8 +210,9 @@ void RenderingManager::start_rendering(
     tile_callback_collection_factory->insert(
         new ProgressTileCallbackFactory(
             global_logger(),
-            m_params.get_optional<size_t>("passes", 1)));
-
+            m_params,
+            m_progress));
+ 
     m_tile_callback_factory.reset(tile_callback_collection_factory);
 
     m_master_renderer.reset(
@@ -493,6 +493,9 @@ void RenderingManager::slot_frame_begin()
     // Start printing rendering time in the status bar.
     m_status_bar.start_rendering_time_display(&m_rendering_timer);
     m_rendering_timer.start();
+
+    // create progress bar/
+    m_progress_bar.start_progress_bar_display("Render ", &m_progress);
 }
 
 void RenderingManager::slot_frame_end()
@@ -500,6 +503,9 @@ void RenderingManager::slot_frame_end()
     // Stop printing rendering time in the status bar.
     m_rendering_timer.measure();
     m_status_bar.stop_rendering_time_display();
+
+    // Stop displaying progress bar.
+    m_progress_bar.stop_progress_bar_display();
 
     // Ensure that the render widget is up-to-date.
     m_render_tab->get_render_widget()->update();

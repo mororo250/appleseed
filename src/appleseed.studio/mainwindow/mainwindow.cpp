@@ -125,7 +125,7 @@ namespace
 MainWindow::MainWindow(QWidget* parent)
   : QMainWindow(parent)
   , m_ui(new Ui::MainWindow())
-  , m_rendering_manager(m_status_bar)
+  , m_rendering_manager(m_status_bar, m_progress_bar)
   , m_project_explorer(nullptr)
   , m_attribute_editor(nullptr)
   , m_project_file_watcher(nullptr)
@@ -586,7 +586,8 @@ void MainWindow::update_pause_resume_checkbox(const bool checked)
 
 void MainWindow::build_status_bar()
 {
-    statusBar()->addWidget(&m_status_bar);
+    statusBar()->addWidget(&m_status_bar, 1);
+    statusBar()->addWidget(&m_progress_bar);
 
     m_minimize_buttons.push_back(new MinimizeButton(m_ui->project_explorer));
     m_minimize_buttons.push_back(new MinimizeButton(m_ui->attribute_editor));
@@ -596,7 +597,7 @@ void MainWindow::build_status_bar()
     for (size_t i = 0; i < m_minimize_buttons.size(); ++i)
     {
         statusBar()->insertPermanentWidget(
-            static_cast<int>(i + 1),
+            static_cast<int>(i + 2),
             m_minimize_buttons[i]);
     }
 }

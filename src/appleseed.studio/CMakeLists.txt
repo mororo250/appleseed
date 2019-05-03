@@ -304,6 +304,8 @@ set (mainwindow_sources
     mainwindow/mainwindow.ui
     mainwindow/minimizebutton.cpp
     mainwindow/minimizebutton.h
+    mainwindow/progressbar.cpp
+    mainwindow/progressbar.h
     mainwindow/qtlogtarget.cpp
     mainwindow/qtlogtarget.h
     mainwindow/renderingsettingswindow.cpp

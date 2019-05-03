@@ -33,6 +33,10 @@
 #include "mainwindow/rendering/qtrenderercontroller.h"
 #include "mainwindow/rendering/renderingtimer.h"
 
+// appleseed.shared headers.
+#include "application/application.h"
+#include "application/progresstilecallback.h"
+
 // appleseed.renderer headers.
 #include "renderer/api/rendering.h"
 #include "renderer/api/types.h"
@@ -58,6 +62,7 @@
 // Forward declarations.
 namespace appleseed     { namespace studio { class RenderTab; } }
 namespace appleseed     { namespace studio { class StatusBar; } }
+namespace appleseed     { namespace studio { class ProgressBar; } }
 namespace foundation    { class IAbortSwitch; }
 namespace renderer      { class Frame; }
 namespace renderer      { class Project; }
@@ -78,7 +83,7 @@ class RenderingManager
     };
 
     // Constructor.
-    explicit RenderingManager(StatusBar& status_bar);
+    explicit RenderingManager(StatusBar& status_bar, ProgressBar& progress_bar);
 
     // Destructor.
     ~RenderingManager() override;
@@ -161,6 +166,7 @@ class RenderingManager
 
   private:
     StatusBar&                                  m_status_bar;
+    ProgressBar&                                m_progress_bar;
     QtRendererController                        m_renderer_controller;
 
     renderer::Project*                          m_project;
@@ -169,8 +175,11 @@ class RenderingManager
     RenderingMode                               m_rendering_mode;
     RenderTab*                                  m_render_tab;
 
+    double                                      m_progress;
+
     std::unique_ptr<renderer::TileCallbackCollectionFactory>      
                                                 m_tile_callback_factory;
+
     std::unique_ptr<renderer::MasterRenderer>   m_master_renderer;
     std::unique_ptr<QThread>                    m_master_renderer_thread;
 
