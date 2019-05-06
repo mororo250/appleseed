@@ -37,6 +37,7 @@
 #include "renderer/kernel/denoising/denoiser.h"
 #include "renderer/kernel/rendering/ishadingresultframebufferfactory.h"
 #include "renderer/kernel/rendering/shadingresultframebuffer.h"
+#include "renderer/kernel/rendering/renderprogress.h"
 #include "renderer/modeling/aov/aov.h"
 #include "renderer/modeling/aov/aovfactoryregistrar.h"
 #include "renderer/modeling/aov/denoiseraov.h"

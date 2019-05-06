@@ -5,8 +5,7 @@
 //
 // This software is released under the MIT license.
 //
-// Copyright (c) 2010-2013 Francois Beaune, Jupiter Jazz Limited
-// Copyright (c) 2014-2018 Francois Beaune, The appleseedhq Organization
+// Copyright (c) 2019 João Marcos Costa, The appleseedhq Organization
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,40 +28,51 @@
 
 #pragma once
 
-// appleseed.renderer headers.
+#include "foundation/utility/stopwatch.h"
+#include "foundation/platform/defaulttimers.h"
 #include "renderer/api/rendering.h"
 
-// appleseed.shared headers.
-#include "dllsymbol.h"
+#include <memory>
+#include <string>
 
-// Standard headers.
-#include <cstddef>
+using namespace foundation;
 
-// Forward declarations.
-namespace foundation { class Logger; }
+namespace renderer
+{
 
-namespace appleseed {
-namespace shared {
 
-class SHAREDDLL ProgressTileCallbackFactory
-  : public renderer::ITileCallbackFactory
+ class RenderProgress
 {
   public:
-    ProgressTileCallbackFactory(foundation::Logger& logger, const renderer::ParamArray& params, double* progress = nullptr);
+    RenderProgress(const Frame* frame);
 
-    // Destructor.
-    ~ProgressTileCallbackFactory() override;
+    void start_progess() { m_stopwatch.start(); }
+    void pouse_progress() { m_stopwatch.pause(); };
+    void end_progress()
+    {
+        m_progress = 0;
+        m_sample_count = 0;
+    }
 
-    // Delete this instance.
-    void release() override;
+    void update_progress();
 
-    // Return a new tile callback instance.
-    renderer::ITileCallback* create() override;
+    void add_samples(std::size_t samples) { m_sample_count = samples; }
+
+    const double get_progress() const { return m_progress; }
+    const double get_time() const { return m_stopwatch.get_seconds(); }
 
   private:
-    struct Impl;
-    Impl* impl;
-};
+    double m_remeaning_time;
 
-}   // namespace shared
-}   // namespace appleseed
+    //const std::size_t m_pass_count;
+    const std::size_t m_max_average_spp;
+    const std::size_t m_time_limit;
+    const std::size_t m_total_pixels;
+
+    //std::size_t m_rendered_tiles_count;
+    //std::size_t m_total_tiles;
+    std::size_t m_sample_count;
+    double m_progress;
+    Stopwatch<DefaultWallclockTimer> m_stopwatch;
+};
+}

@@ -48,8 +48,6 @@ ProgressBar::ProgressBar()
         QProgressBar::chunk\
         {\
             background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #fb9, stop: 0.4999 #f75, stop: 0.5 #f75, stop: 1 #f41 );\
-            border-bottom-right-radius: 7px;\
-            border-bottom-left-radius: 7px;\
             border: 1px;\
       }";
 

@@ -1313,6 +1313,8 @@ set (renderer_kernel_rendering_sources
     renderer/kernel/rendering/renderercomponents.h
     renderer/kernel/rendering/rendererservices.cpp
     renderer/kernel/rendering/rendererservices.h
+    renderer/kernel/rendering/renderprogress.cpp
+    renderer/kernel/rendering/renderprogress.h
     renderer/kernel/rendering/sample.h
     renderer/kernel/rendering/sampleaccumulationbuffer.h
     renderer/kernel/rendering/samplegeneratorbase.cpp

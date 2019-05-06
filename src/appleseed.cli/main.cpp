@@ -517,6 +517,8 @@ namespace
         if (!configure_project(project.ref(), params))
             return false;
 
+        double progress;
+
         // Create the tile callback factory.
         unique_ptr<ITileCallbackFactory> tile_callback_factory;
         if (g_cl.m_send_to_stdout.is_set())
@@ -533,7 +535,8 @@ namespace
                 tile_callback_factory.reset(
                     new ProgressTileCallbackFactory(
                         global_logger(),
-                        params.get_optional<size_t>("passes", 1)));
+                        params,
+                        &progress));
             }
         }
 

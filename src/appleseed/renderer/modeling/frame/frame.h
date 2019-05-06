@@ -67,6 +67,7 @@ namespace renderer      { class IShadingResultFrameBufferFactory; }
 namespace renderer      { class OnFrameBeginRecorder; }
 namespace renderer      { class ParamArray; }
 namespace renderer      { class Project; }
+namespace renderer      { class RenderProgress; }
 
 namespace renderer
 {

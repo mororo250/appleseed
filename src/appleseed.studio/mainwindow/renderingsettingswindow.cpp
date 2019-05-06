@@ -504,21 +504,21 @@ namespace
       private:
         void create_time_limit(QFormLayout* parent)
         {
-            QSpinBox* seconds = create_integer_input("seconds", 0, 60, 5, "s");
-            QSpinBox* minutes = create_integer_input("minutes", 0, 60, 1, "m");
             QSpinBox* hours = create_integer_input("hours", 0, 24, 1, "h");
+            QSpinBox* minutes = create_integer_input("minutes", 0, 60, 1, "m");
+            QSpinBox* seconds = create_integer_input("seconds", 0, 60, 5, "s");
             QCheckBox* unlimited_time = create_checkbox("unlimited_time", "Unlimited");
-            parent->addRow("Time Limit:", create_horizontal_group(seconds, minutes, hours, unlimited_time));
-            connect(unlimited_time, SIGNAL(toggled(bool)), seconds, SLOT(setDisabled(bool)));
-            connect(unlimited_time, SIGNAL(toggled(bool)), minutes, SLOT(setDisabled(bool)));
+            parent->addRow("Time Limit:", create_horizontal_group(hours, minutes, seconds, unlimited_time));
             connect(unlimited_time, SIGNAL(toggled(bool)), hours, SLOT(setDisabled(bool)));
+            connect(unlimited_time, SIGNAL(toggled(bool)), minutes, SLOT(setDisabled(bool)));
+            connect(unlimited_time, SIGNAL(toggled(bool)), seconds, SLOT(setDisabled(bool)));
         }
 
         void load_time_limit(const Configuration& config)
         {
-            const int DefaultSeconds = 0;
-            const int DefaultMinutes = 1;
-            const int DefaultHours = 0;
+            constexpr int DefaultSeconds = 0;
+            constexpr int DefaultMinutes = 1;
+            constexpr int DefaultHours = 0;
 
             const int time_limit = m_params_metadata.get_path_optional<int>("progressive_frame_renderer.time_limit.default", -1);
 
@@ -528,9 +528,9 @@ namespace
             const unsigned int seconds = time_limit == -1 ? DefaultSeconds : time_limit - hours * 3600 - minutes * 60;
 
             set_widget("unlimited_time", true);
-            set_widget("seconds", seconds);
-            set_widget("minutes", minutes);
             set_widget("hours", hours);
+            set_widget("minutes", minutes);
+            set_widget("seconds", seconds);
         }
 
         void save_time_limit(Configuration& config) const

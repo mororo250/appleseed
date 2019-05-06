@@ -35,6 +35,7 @@
 #include "renderer/kernel/rendering/iframerenderer.h"
 #include "renderer/kernel/rendering/isamplegenerator.h"
 #include "renderer/kernel/rendering/itilecallback.h"
+#include "renderer/kernel/rendering/renderprogress.h"
 #include "renderer/kernel/rendering/progressive/samplecounter.h"
 #include "renderer/kernel/rendering/progressive/samplecounthistory.h"
 #include "renderer/kernel/rendering/progressive/samplegeneratorjob.h"
@@ -191,13 +192,16 @@ namespace
 
         void print_settings() const override
         {
+            const uint64 hours = m_params.m_time_limit / 3600;
+            const uint64 minutes = (m_params.m_time_limit - hours * 3600) / 60;
+            const uint64 seconds = m_params.m_time_limit - hours * 3600 - minutes * 60;
             RENDERER_LOG_INFO(
                 "progressive frame renderer settings:\n"
                 "  spectrum mode                 %s\n"
                 "  sampling mode                 %s\n"
                 "  rendering threads             %s\n"
-                "  maximum time rendering %sseconds\n" //Improve it
                 "  max average samples per pixel %s\n"
+                "  time limit                    %s\n" //Improve it
                 "  max fps                       %f\n"
                 "  collect performance stats     %s\n"
                 "  collect luminance stats       %s",
@@ -209,7 +213,9 @@ namespace
                     : pretty_uint(m_params.m_max_average_spp).c_str(),
                 m_params.m_time_limit == numeric_limits<uint64>::max()
                     ? "unlimited"
-                    : pretty_uint(m_params.m_time_limit).c_str(),
+                    : std::string(pretty_uint(hours) + "h "
+                        + pretty_uint(minutes) + "m "
+                        + pretty_uint(seconds) + "s").c_str() ,
                 m_params.m_max_fps,
                 m_params.m_perf_stats ? "on" : "off",
                 m_params.m_luminance_stats ? "on" : "off");
@@ -487,6 +493,7 @@ namespace
                     return;
 
                 // Present the frame.
+                //m_frame.get_progress().add_samples(m_buffer.get_sample_count());
                 m_tile_callback->on_progressive_frame_update(&m_frame);
 
 #ifdef PRINT_DISPLAY_THREAD_PERFS

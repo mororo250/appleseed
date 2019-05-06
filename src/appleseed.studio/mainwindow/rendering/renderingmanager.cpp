@@ -215,7 +215,7 @@ void RenderingManager::start_rendering(
         new ProgressTileCallbackFactory(
             global_logger(),
             m_params,
-            m_progress));
+            &m_progress));
  
     m_tile_callback_factory.reset(tile_callback_collection_factory);
 
