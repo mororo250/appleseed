@@ -47,8 +47,8 @@ namespace renderer
 // Range of wavelengths used throughout the light simulation.
 //
 
-RegularSpectrum31f g_light_wavelengths_nm;
-RegularSpectrum31f g_light_wavelengths_um;
+RegularSpectrum43f g_light_wavelengths_nm;
+RegularSpectrum43f g_light_wavelengths_um;
 
 namespace
 {
@@ -102,7 +102,7 @@ void spectral_values_to_spectrum(
     const float             high_wavelength,
     const size_t            input_spectrum_count,
     const float             input_spectrum[],
-    RegularSpectrum31f&     output_spectrum)
+    RegularSpectrum43f&     output_spectrum)
 {
     assert(low_wavelength < high_wavelength);
 

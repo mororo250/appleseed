@@ -66,7 +66,7 @@ BENCHMARK_SUITE(Foundation_Image_ColorSpace)
     struct SpectrumToCIEXYZFixture
     {
         const LightingConditions    m_lighting_conditions;
-        RegularSpectrum31f          m_input;
+        RegularSpectrum43f          m_input;
         Color3f                     m_output;
 
         SpectrumToCIEXYZFixture()
@@ -74,7 +74,7 @@ BENCHMARK_SUITE(Foundation_Image_ColorSpace)
         {
             MersenneTwister rng;
 
-            for (size_t w = 0; w < RegularSpectrum31f::Samples; ++w)
+            for (size_t w = 0; w < RegularSpectrum43f::Samples; ++w)
                 m_input[w] = rand_float1(rng);
         }
     };
@@ -87,7 +87,7 @@ BENCHMARK_SUITE(Foundation_Image_ColorSpace)
     struct LinearRGBToSpectrumFixture
     {
         Color3f                     m_input;
-        RegularSpectrum31f          m_output;
+        RegularSpectrum43f          m_output;
 
         LinearRGBToSpectrumFixture()
           : m_input(0.5f, 0.7f, 0.2f)

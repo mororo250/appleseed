@@ -82,6 +82,7 @@ void* BSDF::evaluate_inputs(
     const ShadingPoint&     shading_point) const
 {
     void* data = shading_context.get_arena().allocate(compute_input_data_size());
+    Spectrum* test = reinterpret_cast<Spectrum*>(data);
 
     get_inputs().evaluate(
         shading_context.get_texture_cache(),

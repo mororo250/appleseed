@@ -289,7 +289,7 @@ DictionaryArray ColorEntityFactory::get_input_metadata()
             .insert("name", "wavelength_range")
             .insert("label", "Wavelength Range")
             .insert("type", "text")
-            .insert("default", "400.0 700.0")
+            .insert("default", "360.0 780.0")
             .insert("use", "optional")
             .insert("visible_if",
                 Dictionary()

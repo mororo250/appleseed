@@ -41,45 +41,45 @@
 using namespace foundation;
 using namespace renderer;
 
-TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
+TEST_SUITE(Renderer_Utility_DynamicSpectrum43f)
 {
     struct RGBFixture
     {
-        const DynamicSpectrum31f::Mode m_old_mode;
+        const DynamicSpectrum43f::Mode m_old_mode;
 
         RGBFixture()
-          : m_old_mode(DynamicSpectrum31f::set_mode(DynamicSpectrum31f::RGB))
+          : m_old_mode(DynamicSpectrum43f::set_mode(DynamicSpectrum43f::RGB))
         {
         }
 
         ~RGBFixture()
         {
-            DynamicSpectrum31f::set_mode(m_old_mode);
+            DynamicSpectrum43f::set_mode(m_old_mode);
         }
     };
 
     struct SpectralFixture
     {
-        const DynamicSpectrum31f::Mode m_old_mode;
+        const DynamicSpectrum43f::Mode m_old_mode;
 
         SpectralFixture()
-          : m_old_mode(DynamicSpectrum31f::set_mode(DynamicSpectrum31f::Spectral))
+          : m_old_mode(DynamicSpectrum43f::set_mode(DynamicSpectrum43f::Spectral))
         {
         }
 
         ~SpectralFixture()
         {
-            DynamicSpectrum31f::set_mode(m_old_mode);
+            DynamicSpectrum43f::set_mode(m_old_mode);
         }
     };
 
     TEST_CASE_F(Lerp_Spectral, SpectralFixture)
     {
-        static const float AValues[31] =
+        static const float AValues[43] =
         {
-            44.3686705734f, 40.3421349896f, 33.453223163f,
-            8.31074685536f, 6.94405423347f, 5.64898798988f,
-            43.8460619098f, 6.40074755165f, 0.33867778534f,
+            0.0f, 0.0f, 0.0f, 0.0f, 44.3686705734f, 40.3421349896f,
+            33.453223163f, 8.31074685536f, 6.94405423347f,
+            5.64898798988f, 43.8460619098f, 6.40074755165f, 0.33867778534f,
             0.0715336120232f, 2.12863156003f, 34.5451712652f,
             21.5243428209f, 3.9138078502f, 21.1764794452f,
             22.2335340883f, 30.6847305494f, 48.3241077594f,
@@ -87,11 +87,13 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
             38.0971410264f, 30.7149063876f, 10.8512568244f,
             12.1817780577f, 15.7592770342f, 19.9367690804f,
             39.4424421483f, 11.6243008551f, 32.2975710956f,
-            18.1880153577f
+            18.1880153577f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f
         };
 
-        static const float BValues[31] =
+        static const float BValues[43] =
         {
+            0.0f, 0.0f, 0.0f, 0.0f,
             7.16371136279f, 4.92346021263f, 45.2532024467f,
             24.5796560419f, 10.8153340444f, 29.0175099963f,
             1.4203235082f, 46.6306846903f, 11.4450238478f,
@@ -102,11 +104,13 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
             0.615133030455f, 37.019556993f, 34.9476624082f,
             5.07521228466f, 31.417480479f, 34.7101131884f,
             18.6648099603f, 45.6438172418f, 14.4759442377f,
-            40.1987008497f,
+            40.1987008497f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f
         };
 
-        static const float TValues[31] =
+        static const float TValues[43] =
         {
+            0.0f, 0.0f, 0.0f, 0.0f,
             0.0488609444107f, 0.966903688431f, 0.168464414014f,
             0.572471672986f, 0.947986505265f, 0.409792262575f,
             0.254850010845f, 0.739773335505f, 0.746530559414f,
@@ -117,12 +121,13 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
             0.950190112224f, 0.491818015485f, 0.594393913149f,
             0.606335001724f, 0.310539095405f, 0.746640551004f,
             0.98488453207f, 0.558276210639f, 0.050465128121f,
-            0.954259619265f
+            0.954259619265f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f
         };
 
-        const auto a(DynamicSpectrum31f::from_array(AValues));
-        const auto b(DynamicSpectrum31f::from_array(BValues));
-        const auto t(DynamicSpectrum31f::from_array(TValues));
+        const auto a(DynamicSpectrum43f::from_array(AValues));
+        const auto b(DynamicSpectrum43f::from_array(BValues));
+        const auto t(DynamicSpectrum43f::from_array(TValues));
         const auto result = lerp(a, b, t);
 
         for (size_t i = 0, e = result.size(); i < e; ++i)
@@ -133,7 +138,7 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            DynamicSpectrum31f s;
+            DynamicSpectrum43f s;
 
             // Don't use set() to avoid altering the fourth value.
             s[0] = s[1] = s[2] = 2.0f;
@@ -147,7 +152,7 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
     {
         for (size_t i = 0; i < 31; ++i)
         {
-            DynamicSpectrum31f s;
+            DynamicSpectrum43f s;
 
             // Don't use set() to avoid altering the padding value (the 32th value in DynamicSpectrum<>::m_samples).
             for (size_t j = 0; j < 31; ++j)
@@ -161,7 +166,7 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            DynamicSpectrum31f s;
+            DynamicSpectrum43f s;
 
             // Don't use set() to avoid altering the fourth value.
             s[0] = s[1] = s[2] = 1.0f;
@@ -175,7 +180,7 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
     {
         for (size_t i = 0; i < 31; ++i)
         {
-            DynamicSpectrum31f s;
+            DynamicSpectrum43f s;
 
             // Don't use set() to avoid altering the padding value (the 32th value in DynamicSpectrum<>::m_samples).
             for (size_t j = 0; j < 31; ++j)
@@ -202,7 +207,7 @@ TEST_SUITE(Renderer_Utility_DynamicSpectrum31f)
             25.1470816934f
         };
 
-        const auto x(DynamicSpectrum31f::from_array(Values));
+        const auto x(DynamicSpectrum43f::from_array(Values));
         const auto result = sqrt(x);
 
         for (size_t i = 0, e = x.size(); i < e; ++i)

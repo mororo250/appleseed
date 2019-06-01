@@ -101,7 +101,7 @@ void ColorSource::initialize_from_spectrum(const ColorEntity& color_entity)
 
     m_scalar = values[0];
 
-    RegularSpectrum31f s;
+    RegularSpectrum43f s;
     spectral_values_to_spectrum(
         color_entity.get_wavelength_range()[0],
         color_entity.get_wavelength_range()[1],

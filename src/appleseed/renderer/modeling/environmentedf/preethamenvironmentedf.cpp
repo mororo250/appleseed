@@ -168,7 +168,7 @@ namespace
             outgoing = transform.vector_to_parent(local_outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else radiance.set(0.0f);
@@ -190,7 +190,7 @@ namespace
             const Vector3f local_outgoing = transform.vector_to_local(outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else radiance.set(0.0f);
@@ -211,7 +211,7 @@ namespace
             const Vector3f local_outgoing = transform.vector_to_local(outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else radiance.set(0.0f);
@@ -367,7 +367,7 @@ namespace
         void compute_sky_radiance(
             const ShadingContext&   shading_context,
             const Vector3f&         outgoing,
-            RegularSpectrum31f&     radiance) const
+            RegularSpectrum43f&     radiance) const
         {
             if (m_uniform_values.m_luminance_multiplier == 0.0f)
             {

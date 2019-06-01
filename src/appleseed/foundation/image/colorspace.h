@@ -90,9 +90,9 @@ Color<T, 3> transform_color(
 //   http://en.wikipedia.org/wiki/Standard_illuminant#Illuminant_series_D
 //
 
-extern const RegularSpectrum31f DaylightS0;                     // mean spectral radiant power
-extern const RegularSpectrum31f DaylightS1;                     // first characteristic vector (yellow-blue variation)
-extern const RegularSpectrum31f DaylightS2;                     // second characteristic vector (pink-green variation)
+extern const RegularSpectrum43f DaylightS0;                     // mean spectral radiant power
+extern const RegularSpectrum43f DaylightS1;                     // first characteristic vector (yellow-blue variation)
+extern const RegularSpectrum43f DaylightS2;                     // second characteristic vector (pink-green variation)
 
 
 //
@@ -105,10 +105,10 @@ extern const RegularSpectrum31f DaylightS2;                     // second charac
 //
 
 // Daylight illuminants.
-extern const RegularSpectrum31f IlluminantCIED65;               // CIE D65
+extern const RegularSpectrum43f IlluminantCIED65;               // CIE D65
 
 // Incandescent lighting illuminants.
-extern const RegularSpectrum31f IlluminantCIEA;                 // CIE A (black body radiator at 2856 K)
+extern const RegularSpectrum43f IlluminantCIEA;                 // CIE A (black body radiator at 2856 K)
 
 
 //
@@ -121,14 +121,14 @@ extern const RegularSpectrum31f IlluminantCIEA;                 // CIE A (black 
 //
 
 // XYZ color matching functions.
-extern const RegularSpectrum31f XYZCMFCIE19312Deg[3];           // CIE 1931 2-deg
-extern const RegularSpectrum31f XYZCMFCIE1931Judd2Deg[3];       // CIE 1931 2-deg, modified by Judd (1951)
-extern const RegularSpectrum31f XYZCMFCIE1931JuddVos2Deg[3];    // CIE 1931 2-deg, modified by Judd (1951) and Vos (1978)
-extern const RegularSpectrum31f XYZCMFCIE196410Deg[3];          // CIE 1964 10-deg (recommended)
+extern const RegularSpectrum43f XYZCMFCIE19312Deg[3];           // CIE 1931 2-deg
+extern const RegularSpectrum43f XYZCMFCIE1931Judd2Deg[3];       // CIE 1931 2-deg, modified by Judd (1951)
+extern const RegularSpectrum43f XYZCMFCIE1931JuddVos2Deg[3];    // CIE 1931 2-deg, modified by Judd (1951) and Vos (1978)
+extern const RegularSpectrum43f XYZCMFCIE196410Deg[3];          // CIE 1964 10-deg (recommended)
 
 // RGB color matching functions.
-extern const RegularSpectrum31f RGBCMFStilesBurch19552Deg[3];   // Stiles and Burch (1955) 2-deg
-extern const RegularSpectrum31f RGBCMFStilesBurch195910Deg[3];  // Stiles and Burch (1959) 10-deg (recommended)
+extern const RegularSpectrum43f RGBCMFStilesBurch19552Deg[3];   // Stiles and Burch (1955) 2-deg
+extern const RegularSpectrum43f RGBCMFStilesBurch195910Deg[3];  // Stiles and Burch (1959) 10-deg (recommended)
 
 
 //
@@ -136,22 +136,22 @@ extern const RegularSpectrum31f RGBCMFStilesBurch195910Deg[3];  // Stiles and Bu
 //
 
 // Basis spectra for reflectance conversions.
-extern const RegularSpectrum31f RGBToSpectrumWhiteReflectance;
-extern const RegularSpectrum31f RGBToSpectrumCyanReflectance;
-extern const RegularSpectrum31f RGBToSpectrumMagentaReflectance;
-extern const RegularSpectrum31f RGBToSpectrumYellowReflectance;
-extern const RegularSpectrum31f RGBToSpectrumRedReflectance;
-extern const RegularSpectrum31f RGBToSpectrumGreenReflectance;
-extern const RegularSpectrum31f RGBToSpectrumBlueReflectance;
+extern const RegularSpectrum43f RGBToSpectrumWhiteReflectance;
+extern const RegularSpectrum43f RGBToSpectrumCyanReflectance;
+extern const RegularSpectrum43f RGBToSpectrumMagentaReflectance;
+extern const RegularSpectrum43f RGBToSpectrumYellowReflectance;
+extern const RegularSpectrum43f RGBToSpectrumRedReflectance;
+extern const RegularSpectrum43f RGBToSpectrumGreenReflectance;
+extern const RegularSpectrum43f RGBToSpectrumBlueReflectance;
 
 // Basis spectra for illuminance conversions.
-extern const RegularSpectrum31f RGBToSpectrumWhiteIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumCyanIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumMagentaIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumYellowIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumRedIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumGreenIlluminance;
-extern const RegularSpectrum31f RGBToSpectrumBlueIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumWhiteIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumCyanIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumMagentaIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumYellowIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumRedIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumGreenIlluminance;
+extern const RegularSpectrum43f RGBToSpectrumBlueIlluminance;
 
 
 //
@@ -161,13 +161,13 @@ extern const RegularSpectrum31f RGBToSpectrumBlueIlluminance;
 class LightingConditions
 {
   public:
-    APPLESEED_SIMD4_ALIGN Color4f   m_cmf[32];                  // precomputed values of (cmf[0], cmf[1], cmf[2]) * illuminant
+    APPLESEED_SIMD4_ALIGN Color4f   m_cmf[44];                  // precomputed values of (cmf[0], cmf[1], cmf[2]) * illuminant
 
     LightingConditions();                                       // leaves the object uninitialized
 
     LightingConditions(
-        const RegularSpectrum31f&   illuminant,                 // illuminant
-        const RegularSpectrum31f    cmf[3]);                    // color matching functions
+        const RegularSpectrum43f&   illuminant,                 // illuminant
+        const RegularSpectrum43f    cmf[3]);                    // color matching functions
 };
 
 
@@ -845,14 +845,14 @@ Color<T, 3> spectrum_to_ciexyz(
     const SpectrumType&         spectrum)
 {
     static_assert(
-        SpectrumType::Samples == 31,
-        "foundation::spectrum_to_ciexyz() expects 31-channel spectra");
+        SpectrumType::Samples == 43,
+        "foundation::spectrum_to_ciexyz() expects 43-channel spectra");
 
     T x = T(0.0);
     T y = T(0.0);
     T z = T(0.0);
 
-    for (size_t w = 0; w < 31; ++w)
+    for (size_t w = 0; w < 43; ++w)
     {
         const T val = spectrum[w];
         x += lighting.m_cmf[w][0] * val;
@@ -866,16 +866,16 @@ Color<T, 3> spectrum_to_ciexyz(
 #ifdef APPLESEED_USE_SSE
 
 template <>
-inline Color3f spectrum_to_ciexyz<float, RegularSpectrum31f>(
+inline Color3f spectrum_to_ciexyz<float, RegularSpectrum43f>(
     const LightingConditions&   lighting,
-    const RegularSpectrum31f&   spectrum)
+    const RegularSpectrum43f&   spectrum)
 {
     __m128 xyz1 = _mm_setzero_ps();
     __m128 xyz2 = _mm_setzero_ps();
     __m128 xyz3 = _mm_setzero_ps();
     __m128 xyz4 = _mm_setzero_ps();
 
-    for (size_t w = 0; w < 8; ++w)
+    for (size_t w = 0; w < 11; ++w)
     {
         xyz1 = _mm_add_ps(xyz1, _mm_mul_ps(_mm_set1_ps(spectrum[4 * w + 0]), _mm_load_ps(&lighting.m_cmf[4 * w + 0][0])));
         xyz2 = _mm_add_ps(xyz2, _mm_mul_ps(_mm_set1_ps(spectrum[4 * w + 1]), _mm_load_ps(&lighting.m_cmf[4 * w + 1][0])));
@@ -921,10 +921,10 @@ void ciexyz_illuminance_to_spectrum(
 //
 
 template <>
-inline void daylight_ciexy_to_spectrum<float, RegularSpectrum31f>(
+inline void daylight_ciexy_to_spectrum<float, RegularSpectrum43f>(
     const float                 x,
     const float                 y,
-    RegularSpectrum31f&         spectrum)
+    RegularSpectrum43f&         spectrum)
 {
     const float rcp_m = 1.0f / (0.0241f + 0.2562f * x - 0.7341f * y);
     const float m1 = (-1.3515f - 1.7703f * x + 5.9114f * y) * rcp_m;
@@ -932,11 +932,11 @@ inline void daylight_ciexy_to_spectrum<float, RegularSpectrum31f>(
 
     spectrum = DaylightS0;
 
-    RegularSpectrum31f s1 = DaylightS1;
+    RegularSpectrum43f s1 = DaylightS1;
     s1 *= m1;
     spectrum += s1;
 
-    RegularSpectrum31f s2 = DaylightS2;
+    RegularSpectrum43f s2 = DaylightS2;
     s2 *= m2;
     spectrum += s2;
 }

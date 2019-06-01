@@ -41,7 +41,7 @@
             <color name="diffuse_brdf_reflectance">
                 <parameter name="color_space" value="srgb" />
                 <parameter name="multiplier" value="1.0" />
-                <parameter name="wavelength_range" value="400.0 700.0" />
+                <parameter name="wavelength_range" value="360.0 780.0" />
                 <values>
                     0.729412019 0.729412019 0.729412019
                 </values>
@@ -52,7 +52,7 @@
             <color name="metal_brdf_diffuse">
                 <parameter name="color_space" value="srgb" />
                 <parameter name="multiplier" value="1.0" />
-                <parameter name="wavelength_range" value="400.0 700.0" />
+                <parameter name="wavelength_range" value="360.0 780.0" />
                 <values>
                     1.000000000 1.000000000 1.000000000
                 </values>
@@ -63,7 +63,7 @@
             <color name="metal_brdf_glossy">
                 <parameter name="color_space" value="srgb" />
                 <parameter name="multiplier" value="1.0" />
-                <parameter name="wavelength_range" value="400.0 700.0" />
+                <parameter name="wavelength_range" value="360.0 780.0" />
                 <values>
                     1.000000000 1.000000000 1.000000000
                 </values>

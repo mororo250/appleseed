@@ -276,8 +276,8 @@ namespace
 
         InputValues         m_values;
 
-        RegularSpectrum31f  m_k1;
-        RegularSpectrum31f  m_k2;
+        RegularSpectrum43f  m_k1;
+        RegularSpectrum43f  m_k2;
 
         void apply_env_edf_overrides(const EnvironmentEDF* env_edf)
         {
@@ -322,12 +322,12 @@ namespace
 
         void precompute_constants()
         {
-            for (size_t i = 0; i < 31; ++i)
+            for (size_t i = 0; i < 43; ++i)
                 m_k1[i] = -0.008735f * std::pow(g_light_wavelengths_um[i], -4.08f);
 
             const float Alpha = 1.3f;               // ratio of small to large particle sizes (0 to 4, typically 1.3)
 
-            for (size_t i = 0; i < 31; ++i)
+            for (size_t i = 0; i < 43; ++i)
                 m_k2[i] = std::pow(g_light_wavelengths_um[i], -Alpha);
         }
 
@@ -335,7 +335,7 @@ namespace
             const Vector3d&         outgoing,
             const float             turbidity,
             const float             radiance_multiplier,
-            RegularSpectrum31f&     radiance) const
+            RegularSpectrum43f&     radiance) const
         {
             // Compute the relative optical mass.
             const float cos_theta = -static_cast<float>(outgoing.y);
@@ -349,96 +349,231 @@ namespace
             const float m = 1.0f / (cos_theta + 0.15f * std::pow(theta_delta, -1.253f));
 
             // Compute transmittance due to Rayleigh scattering.
-            RegularSpectrum31f tau_r;
-            for (size_t i = 0; i < 31; ++i)
+            RegularSpectrum43f tau_r;
+            for (size_t i = 0; i < 43; ++i)
                 tau_r[i] = std::exp(m * m_k1[i]);
 
             // Compute transmittance due to aerosols.
             const float beta = 0.04608f * turbidity - 0.04586f;
-            RegularSpectrum31f tau_a;
-            for (size_t i = 0; i < 31; ++i)
+            RegularSpectrum43f tau_a;
+            for (size_t i = 0; i < 43; ++i)
                 tau_a[i] = std::exp(-beta * m * m_k2[i]);
 
             // Compute transmittance due to ozone absorption.
             const float L = 0.35f;                  // amount of ozone in cm
-            static const float Ko[31] =
+            static constexpr float Ko[43] =
             {
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.003f, 0.006f, 0.009f,
-                0.014f, 0.021f, 0.030f, 0.040f,
-                0.048f, 0.063f, 0.075f, 0.085f,
-                0.103f, 0.120f, 0.120f, 0.115f,
-                0.125f, 0.120f, 0.105f, 0.090f,
-                0.079f, 0.067f, 0.057f, 0.048f,
-                0.036f, 0.028f, 0.023f
+                0.000f,         // 360 nm
+                0.000f,         // 370 nm
+                0.000f,         // 380 nm         
+                0.000f,         // 390 nm
+                0.000f,         // 400 nm
+                0.000f,         // 410 nm
+                0.000f,         // 420 nm
+                0.000f,         // 430 nm
+                0.000f,         // 440 nm
+                0.003f,         // 450 nm
+                0.006f,         // 460 nm
+                0.009f,         // 470 nm
+                0.014f,         // 480 nm
+                0.021f,         // 490 nm
+                0.030f,         // 500 nm
+                0.040f,         // 510 nm
+                0.048f,         // 520 nm
+                0.063f,         // 530 nm
+                0.075f,         // 540 nm
+                0.085f,         // 550 nm
+                0.103f,         // 560 nm
+                0.120f,         // 570 nm
+                0.120f,         // 580 nm
+                0.115f,         // 590 nm
+                0.125f,         // 600 nm
+                0.120f,         // 610 nm
+                0.105f,         // 620 nm
+                0.090f,         // 630 nm
+                0.079f,         // 640 nm
+                0.067f,         // 650 nm
+                0.057f,         // 660 nm
+                0.048f,         // 670 nm
+                0.036f,         // 680 nm
+                0.028f,         // 690 nm
+                0.023f,         // 700 nm
+                0.018f,         // 710 nm
+                0.014f,         // 720 nm
+                0.011f,         // 730 nm
+                0.010f,         // 740 nm
+                0.009f,         // 750 nm
+                0.007f,         // 760 nm
+                0.004f,         // 770 nm
+                0.000f          // 780 nm       
             };
-            RegularSpectrum31f tau_o;
-            for (size_t i = 0; i < 31; ++i)
+            RegularSpectrum43f tau_o;
+            for (size_t i = 0; i < 43; ++i)
                 tau_o[i] = std::exp(-Ko[i] * L * m);
 
-#ifdef COMPUTE_REDUNDANT
             // Compute transmittance due to mixed gases absorption.
-            // Disabled since all coefficients are zero in the wavelength range of the simulation.
-            static const float Kg[31] =
+            static constexpr float Kg[43] =
             {
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f
-            };
-            RegularSpectrum31f tau_g;
-            for (size_t i = 0; i < 31; ++i)
+                0.000f,         // 360 nm
+                0.000f,         // 370 nm
+                0.000f,         // 380 nm
+                0.000f,         // 390 nm
+                0.000f,         // 400 nm
+                0.000f,         // 410 nm
+                0.000f,         // 420 nm
+                0.000f,         // 430 nm
+                0.000f,         // 440 nm
+                0.000f,         // 450 nm
+                0.000f,         // 460 nm
+                0.000f,         // 470 nm
+                0.000f,         // 480 nm
+                0.000f,         // 490 nm
+                0.000f,         // 500 nm
+                0.000f,         // 510 nm
+                0.000f,         // 520 nm
+                0.000f,         // 530 nm
+                0.000f,         // 540 nm
+                0.000f,         // 550 nm
+                0.000f,         // 560 nm
+                0.000f,         // 570 nm
+                0.000f,         // 580 nm
+                0.000f,         // 590 nm
+                0.000f,         // 600 nm
+                0.000f,         // 610 nm
+                0.000f,         // 620 nm
+                0.000f,         // 630 nm
+                0.000f,         // 640 nm
+                0.000f,         // 650 nm
+                0.000f,         // 660 nm
+                0.000f,         // 670 nm
+                0.000f,         // 680 nm
+                0.000f,         // 690 nm
+                0.000f,         // 700 nm
+                0.000f,         // 710 nm
+                0.000f,         // 720 nm
+                0.000f,         // 730 nm
+                0.000f,         // 740 nm
+                0.000f,         // 750 nm
+                3.000f,         // 760 nm
+                0.210f,         // 770 nm
+                0.000f          // 780 nm
+        };
+            RegularSpectrum43f tau_g;
+            for (size_t i = 0; i < 43; ++i)
                 tau_g[i] = std::exp(-1.41f * Kg[i] * m / std::pow(1.0f + 118.93f * Kg[i] * m, 0.45f));
-#endif
 
             // Compute transmittance due to water vapor absorption.
             const float W = 2.0f;                   // precipitable water vapor in cm
-            static const float Kwa[31] =
+            static constexpr float Kwa[43] =
             {
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.000f, 0.000f, 0.000f,
-                0.000f, 0.016f, 0.024f
+                0.00000f,       // 360 nm
+                0.00000f,       // 370 nm
+                0.00000f,       // 380 nm
+                0.00000f,       // 390 nm
+                0.00000f,       // 400 nm
+                0.00000f,       // 410 nm
+                0.00000f,       // 420 nm
+                0.00000f,       // 430 nm
+                0.00000f,       // 440 nm
+                0.00000f,       // 450 nm
+                0.00000f,       // 460 nm
+                0.00000f,       // 470 nm
+                0.00000f,       // 480 nm
+                0.00000f,       // 490 nm
+                0.00000f,       // 500 nm
+                0.00000f,       // 510 nm
+                0.00000f,       // 520 nm
+                0.00000f,       // 530 nm
+                0.00000f,       // 540 nm
+                0.00000f,       // 550 nm
+                0.00000f,       // 560 nm
+                0.00000f,       // 570 nm
+                0.00000f,       // 580 nm
+                0.00000f,       // 590 nm
+                0.00000f,       // 600 nm
+                0.00000f,       // 610 nm
+                0.00000f,       // 620 nm
+                0.00000f,       // 630 nm
+                0.00000f,       // 640 nm
+                0.00000f,       // 650 nm
+                0.00000f,       // 660 nm
+                0.00000f,       // 670 nm
+                0.00000f,       // 680 nm
+                0.01600f,       // 690 nm
+                0.02400f,       // 700 nm
+                0.01250f,       // 710 nm
+                0.02400f,       // 720 nm
+                1.00000f,       // 730 nm
+                0.87000f,       // 740 nm
+                0.06100f,       // 750 nm
+                0.00100f,       // 760 nm
+                0.00001f,       // 770 nm
+                0.00060f        // 780 nm
             };
-            RegularSpectrum31f tau_wa;
-            for (size_t i = 0; i < 31; ++i)
+            RegularSpectrum43f tau_wa;
+            for (size_t i = 0; i < 43; ++i)
                 tau_wa[i] = std::exp(-0.2385f * Kwa[i] * W * m / std::pow(1.0f + 20.07f * Kwa[i] * W * m, 0.45f));
 
             // Sun radiance in W.m^-2.sr^-1.um^-1.
             // The units in the paper are W.cm^-2.sr^-1.um^-1. We must multiply the values
             // by 10000 to obtain W.m^-2.sr^-1.um^-1. We must then divide them by 1000 to
             // obtain W.m^-2.sr^-1.nm^-1.
-            static const float SunRadianceValues[31] =
+            static constexpr float SunRadianceValues[43] =
             {
-                21127.5f, 25888.2f, 25829.1f, 24232.3f,
-                26760.5f, 29658.3f, 30545.4f, 30057.5f,
-                30663.7f, 28830.4f, 28712.1f, 27825.0f,
-                27100.6f, 27233.6f, 26361.3f, 25503.8f,
-                25060.2f, 25311.6f, 25355.9f, 25134.2f,
-                24631.5f, 24173.2f, 23685.3f, 23212.1f,
-                22827.7f, 22339.8f, 21970.2f, 21526.7f,
-                21097.9f, 20728.3f, 20240.4f
+                0.00000f,       // 360 nm
+                0.00000f,       // 370 nm
+                16559.0f,       // 380 nm
+                16233.7f,       // 390 nm
+                21127.5f,       // 400 nm
+                25888.2f,       // 410 nm
+                25829.1f,       // 420 nm
+                24232.3f,       // 430 nm
+                26760.5f,       // 440 nm
+                29658.3f,       // 450 nm
+                30545.4f,       // 460 nm
+                30057.5f,       // 470 nm
+                30663.7f,       // 480 nm
+                28830.4f,       // 490 nm
+                28712.1f,       // 500 nm
+                27825.0f,       // 510 nm
+                27100.6f,       // 520 nm
+                27233.6f,       // 530 nm
+                26361.3f,       // 540 nm
+                25503.8f,       // 550 nm
+                25060.2f,       // 560 nm
+                25311.6f,       // 570 nm
+                25355.9f,       // 580 nm
+                25134.2f,       // 590 nm
+                24631.5f,       // 600 nm
+                24173.2f,       // 610 nm
+                23685.3f,       // 620 nm
+                23212.1f,       // 630 nm
+                22827.7f,       // 640 nm
+                22339.8f,       // 650 nm
+                21970.2f,       // 660 nm
+                21526.7f,       // 670 nm
+                21097.9f,       // 680 nm
+                20728.3f,       // 690 nm
+                1987.08f,       // 700 nm
+                1942.72f,       // 710 nm
+                1907.24f,       // 720 nm
+                1862.89f,       // 730 nm
+                1825.92f,       // 740 nm
+                0.00000f,       // 750 nm
+                0.00000f,       // 760 nm
+                0.00000f,       // 770 nm
+                0.00000f        // 780 nm
             };
 
             // Compute the attenuated radiance of the Sun.
-            for (size_t i = 0; i < 31; ++i)
+            for (size_t i = 0; i < 43; ++i)
             {
                 radiance[i] =
                     SunRadianceValues[i] *
                     tau_r[i] *
                     tau_a[i] *
                     tau_o[i] *
-#ifdef COMPUTE_REDUNDANT
                     tau_g[i] *      // always 1.0
-#endif
                     tau_wa[i] *
                     radiance_multiplier;
             }
@@ -468,7 +603,7 @@ namespace
             probability = 1.0f / (Pi<float>() * square(static_cast<float>(disk_radius)));
             assert(probability > 0.0f);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             compute_sun_radiance(
                 outgoing,
                 m_values.m_turbidity,
@@ -511,7 +646,7 @@ namespace
 
             outgoing = normalize(target_point - position);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             compute_sun_radiance(
                 outgoing,
                 m_values.m_turbidity,
