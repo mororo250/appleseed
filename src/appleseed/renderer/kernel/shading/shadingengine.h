@@ -98,6 +98,14 @@ class ShadingEngine
         AOVAccumulatorContainer&    aov_accumulators,
         ShadingResult&              shading_result) const;
 
+    void shade_light(
+        SamplingContext& sampling_context,
+        const PixelContext& pixel_context,
+        const ShadingContext& shading_context,
+        const ShadingPoint& shading_point,
+        AOVAccumulatorContainer& aov_accumulators,
+        ShadingResult& shading_result) const;
+
     void shade_environment(
         SamplingContext&            sampling_context,
         const PixelContext&         pixel_context,
@@ -132,6 +140,13 @@ inline bool ShadingEngine::shade(
     }
     else
     {
+        shade_light(
+            sampling_context,
+            pixel_context,
+            shading_context,
+            shading_point,
+            aov_accumulators,
+            shading_result);
         shade_environment(
             sampling_context,
             pixel_context,

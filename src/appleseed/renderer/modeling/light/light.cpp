@@ -150,4 +150,11 @@ void Light::sample(
             probability);
 }
 
+void Light::evaluate(
+    const ShadingContext& shading_context,
+    const Vector3d& outgoing,
+    Spectrum& value) const
+{
+}
+
 }   // namespace renderer

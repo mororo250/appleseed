@@ -33,6 +33,8 @@
 // appleseed.renderer headers.
 #include "renderer/kernel/aov/aovaccumulator.h"
 #include "renderer/kernel/aov/aovcomponents.h"
+
+#include "renderer/kernel/lighting/ilightingengine.h"
 #include "renderer/kernel/shading/closures.h"
 #include "renderer/kernel/shading/shadingcomponents.h"
 #include "renderer/kernel/shading/shadingcontext.h"
@@ -41,6 +43,7 @@
 #include "renderer/modeling/environment/environment.h"
 #include "renderer/modeling/environmentshader/environmentshader.h"
 #include "renderer/modeling/input/source.h"
+#include "renderer/modeling/light/light.h"
 #include "renderer/modeling/material/material.h"
 #include "renderer/modeling/object/object.h"
 #include "renderer/modeling/scene/assembly.h"
@@ -206,6 +209,33 @@ bool ShadingEngine::shade_hit_point(
     }
 
     return false;
+}
+
+void ShadingEngine::shade_light(
+    SamplingContext& sampling_context,
+    const PixelContext& pixel_context,
+    const ShadingContext& shading_context,
+    const ShadingPoint& shading_point,
+    AOVAccumulatorContainer& aov_accumulators,
+    ShadingResult& shading_result) const
+{
+    ShadingComponents radiance;
+    AOVComponents aov_components;
+    Spectrum value;
+
+    for (Light& light : shading_point.get_scene().assembly_instances().begin()->get_assembly().lights())
+    {
+        Light* light_ptr = &light;
+        light_ptr->evaluate(
+            shading_context,
+            normalize(shading_point.get_ray().m_dir),
+            value);
+
+        radiance.m_emission = value;
+    }
+
+    Spectrum temp = radiance.m_emission;
+    shading_result.m_main.rgb() = temp.illuminance_to_rgb();
 }
 
 void ShadingEngine::shade_environment(

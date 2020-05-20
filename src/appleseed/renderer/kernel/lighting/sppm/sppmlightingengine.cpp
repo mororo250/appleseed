@@ -49,6 +49,7 @@
 #include "renderer/modeling/edf/edf.h"
 #include "renderer/modeling/environment/environment.h"
 #include "renderer/modeling/environmentedf/environmentedf.h"
+#include "renderer/modeling/light/light.h"
 #include "renderer/modeling/scene/scene.h"
 #include "renderer/utility/spectrumclamp.h"
 #include "renderer/utility/stochasticcast.h"
@@ -291,6 +292,28 @@ namespace
                 // Don't compute lighting in the first pass if importons are enabled.
                 if (!m_params.m_enable_importons || m_pass_callback.get_pass_number() > 0)
                 {
+                    for (auto& light_info : m_backward_light_sampler.get_outer_space_physical_light_vector())
+                    {
+                        Spectrum value;
+                        light_info.m_light->evaluate(
+                            m_shading_context,
+                            normalize(-Vector3d(vertex.m_outgoing.get_value())),
+                            value);
+
+                        // Apply path throughput.
+                        value *= vertex.m_throughput;
+
+                        // Optionally clamp secondary rays contribution.
+                        if (m_params.m_path_tracing_has_max_ray_intensity && vertex.m_path_length > 1 && vertex.m_prev_mode != ScatteringMode::Specular)
+                            clamp_contribution(value, m_params.m_path_tracing_has_max_ray_intensity);
+
+                        // Update path radiance.
+                        m_path_radiance.add_emission(
+                            vertex.m_path_length,
+                            vertex.m_aov_mode,
+                            value);
+                    }
+
                     // Can't look up the environment if there's no environment EDF.
                     if (m_env_edf == nullptr)
                         return;

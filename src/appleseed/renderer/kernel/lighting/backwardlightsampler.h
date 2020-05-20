@@ -72,6 +72,9 @@ class BackwardLightSampler
     // Return true if the scene contains at least one non-physical light or emitting shape.
     bool has_lights() const;
 
+    // Return true if the scene contains at leat one outter-space-physical light.
+    bool has_outter_space_light() const;
+
     // Return true if the scene contains at least one light that can be hit by a ray.
     bool has_hittable_lights() const;
 
@@ -115,6 +118,11 @@ inline bool BackwardLightSampler::has_lights() const
         m_non_physical_lights_cdf.valid() ||
         !m_emitting_shapes.empty() ||
         !m_light_tree_lights.empty();
+}
+
+inline bool BackwardLightSampler::has_outter_space_light() const
+{
+    return m_outer_space_physical_lights.empty();
 }
 
 inline bool BackwardLightSampler::has_hittable_lights() const

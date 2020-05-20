@@ -81,10 +81,10 @@ namespace
 
     // Sun's radius, in millions of km.
     // Reference: https://en.wikipedia.org/wiki/Solar_radius
-    const float SunRadius = 0.6957f;
+    constexpr float SunRadius = 0.6957f;
 
     // The smallest valid turbidity value.
-    const float BaseTurbidity = 2.0f;
+    constexpr float BaseTurbidity = 2.0f;
 
     class SunLight
       : public Light
@@ -121,6 +121,9 @@ namespace
             if (!Light::on_frame_begin(project, parent, recorder, abort_switch))
                 return false;
 
+            // Check if sun disk is visible.
+            m_visibility = m_params.get_optional<bool>("visibility", true);
+
             // Evaluate uniform inputs.
             m_inputs.evaluate_uniforms(&m_values);
 
@@ -148,7 +151,8 @@ namespace
 
             // Compute the Sun's solid angle.
             // Reference: https://en.wikipedia.org/wiki/Solid_angle#Sun_and_Moon
-            m_sun_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius / m_values.m_distance)));
+
+            m_sun_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius * m_values.m_size_multiplier / m_values.m_distance)));
 
             // If the Sun light is bound to an environment EDF, let it override the Sun's direction and turbidity.
             const EnvironmentEDF* env_edf = dynamic_cast<EnvironmentEDF*>(m_inputs.get_entity("environment_edf"));
@@ -253,6 +257,47 @@ namespace
             }
         }
 
+        void evaluate(
+            const ShadingContext& shading_context,
+            const Vector3d& outgoing,
+            Spectrum& value) const override
+        {
+            assert(is_normalized(outgoing));
+
+            if (!m_visibility)
+            {
+                value.set(0.0f);
+                return;
+            }
+
+            const Vector3d local_outgoing = normalize(get_transform().point_to_local(outgoing));
+            const double cos_theta = dot(local_outgoing, Vector3d(0.0, 0.0, 1.0));
+            const double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
+
+            const double sin_theta_max = SunRadius * m_values.m_size_multiplier / m_values.m_distance;
+            const double cos_theta_max = std::sqrt(1.0 - sin_theta_max * sin_theta_max);
+
+
+            if (cos_theta < cos_theta_max)
+            {
+                value.set(0.0f);
+                return;
+            }
+
+            const float distnace_to_center = static_cast<float>(SunRadius * m_values.m_size_multiplier *
+                ((sin_theta / cos_theta) / (sin_theta_max / cos_theta_max)));
+
+            RegularSpectrum31f radiance;
+            compute_sun_radiance(
+                -outgoing,
+                m_values.m_turbidity,
+                m_values.m_radiance_multiplier,
+                radiance,
+                distnace_to_center);
+
+            value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
+        }
+
         float compute_distance_attenuation(
             const Vector3d&         target,
             const Vector3d&         position) const override
@@ -269,6 +314,7 @@ namespace
             float           m_distance;                 // distance between Sun and scene, in millions of km
         };
 
+        bool                m_visibility;               // visibility of the sun
         Vector3d            m_scene_center;             // world space
         double              m_scene_radius;             // world space
         double              m_safe_scene_diameter;      // world space
@@ -284,20 +330,26 @@ namespace
             // Use the Sun direction from the EDF if it has one.
             const Source* sun_theta_src = env_edf->get_inputs().source("sun_theta");
             const Source* sun_phi_src = env_edf->get_inputs().source("sun_phi");
+            const Source* sun_shift_src = env_edf-> get_inputs().source("horizon_shift");
+
             if (sun_theta_src != nullptr &&
                 sun_theta_src->is_uniform() &&
                 sun_phi_src != nullptr &&
-                sun_phi_src->is_uniform())
+                sun_phi_src->is_uniform() &&
+                sun_shift_src != nullptr &&
+                sun_shift_src->is_uniform())
             {
-                float sun_theta, sun_phi;
+                float sun_theta, sun_phi, sun_shift;
                 sun_theta_src->evaluate_uniform(sun_theta);
                 sun_phi_src->evaluate_uniform(sun_phi);
+                sun_shift_src->evaluate_uniform(sun_shift);
 
                 Transformd scratch;
                 const Transformd& env_edf_transform = env_edf->transform_sequence().evaluate(0.0f, scratch);
 
                 set_transform(
                     Transformd::from_local_to_parent(
+                        Matrix4d::make_translation(Vector3d(0.0, sun_shift, 0.0)) *
                         Matrix4d::make_rotation(
                             Quaterniond::make_rotation(
                                 Vector3d(0.0, 0.0, -1.0),   // default emission direction of this light
@@ -335,13 +387,15 @@ namespace
             const Vector3d&         outgoing,
             const float             turbidity,
             const float             radiance_multiplier,
-            RegularSpectrum31f&     radiance) const
+            RegularSpectrum31f&     radiance,
+            const float             distance_to_center = 0.0f) const
         {
+
             // Compute the relative optical mass.
             const float cos_theta = -static_cast<float>(outgoing.y);
             const float theta = std::acos(cos_theta);
             const float theta_delta = 93.885f - rad_to_deg(theta);
-            if (theta_delta < 0.0f)
+            if (cos_theta < 0.0f)
             {
                 radiance.set(0.0f);
                 return;
@@ -428,6 +482,15 @@ namespace
                 21097.9f, 20728.3f, 20240.4f
             };
 
+            // Limb darkening.
+            constexpr float LD_COEFICIENT = 0.6f; // Limb darkening coefficient for the sun for visible sunlight.
+            float limb_darkenig = 1.0f;
+            if (distance_to_center > 0.0f)
+                limb_darkenig = (1.0f - LD_COEFICIENT *
+                    (1.0f - std::sqrt(1.0f - std::pow(distance_to_center, 2.0f) /
+                    std::pow(SunRadius * m_values.m_size_multiplier, 2.0f))));
+         
+
             // Compute the attenuated radiance of the Sun.
             for (size_t i = 0; i < 31; ++i)
             {
@@ -440,6 +503,7 @@ namespace
                     tau_g[i] *      // always 1.0
 #endif
                     tau_wa[i] *
+                    limb_darkenig *
                     radiance_multiplier;
             }
         }
@@ -454,7 +518,7 @@ namespace
             Spectrum&               value,
             float&                  probability) const
         {
-            outgoing = -normalize(light_transform.get_parent_z());
+            outgoing = -normalize(light_transform.get_parent_z() + light_transform.get_parent_origin());
 
             const Basis3d basis(outgoing);
             const Vector2d p = sample_disk_uniform(s);
@@ -500,7 +564,7 @@ namespace
 
             outgoing = -normalize(light_transform.get_parent_z());
 
-            const Basis3d basis(outgoing);
+            Basis3d basis(outgoing);
             const Vector2d p = sample_disk_uniform(s);
 
             position =
@@ -510,15 +574,29 @@ namespace
                 + sun_radius * p[1] * basis.get_tangent_v();
 
             outgoing = normalize(target_point - position);
+            float distnace_to_center = SunRadius * m_values.m_size_multiplier * float(std::sqrt(p[0] * p[0] + p[1] * p[1]));
 
             RegularSpectrum31f radiance;
             compute_sun_radiance(
                 outgoing,
                 m_values.m_turbidity,
                 m_values.m_radiance_multiplier,
-                radiance);
+                radiance,
+                distnace_to_center);
 
             value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
+
+            // Shift sun.
+            basis = Basis3d(-normalize(light_transform.get_parent_z() + light_transform.get_parent_origin()));
+
+            // Repositioning.
+            position =
+                target_point
+                - m_safe_scene_diameter * basis.get_normal()
+                + sun_radius * p[0] * basis.get_tangent_u()
+                + sun_radius * p[1] * basis.get_tangent_v();
+            outgoing = normalize(target_point - position);
+
             value *= m_sun_solid_angle;
 
             //
@@ -576,6 +654,15 @@ DictionaryArray SunLightFactory::get_input_metadata() const
                 Dictionary().insert("environment_edf", "Environment EDFs"))
             .insert("use", "optional")
             .insert("help", "If an environment EDF is bound, use the sun angles and turbidity values from the environment"));
+
+    metadata.push_back(
+        Dictionary()
+            .insert("name", "visibility")
+            .insert("label", "Enable Visibility")
+            .insert("type", "boolean")
+            .insert("use", "optional")
+            .insert("default", "on")
+            .insert("help", "Make the sun visible to the camera"));
 
     metadata.push_back(
         Dictionary()

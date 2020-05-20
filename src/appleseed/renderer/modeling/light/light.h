@@ -81,6 +81,7 @@ class APPLESEED_DLLSYMBOL Light
         CastShadows         = 1UL << 0,     // does this light cast shadows?
         CastIndirectLight   = 1UL << 1,     // does this light generate indirect lighting?
         LightTreeCompatible = 1UL << 2,     // can this light be used by the LightTree?
+        HasPhysicalShape    = 1UL << 3,     // can this light be used by the LightTree?
     };
 
     // Retrieve the flags.
@@ -129,6 +130,11 @@ class APPLESEED_DLLSYMBOL Light
         foundation::Vector3d&           outgoing,                   // world space emission direction, unit-length
         Spectrum&                       value,                      // light value
         float&                          probability) const;         // PDF value
+
+    virtual void evaluate(
+        const ShadingContext& shading_context,
+        const foundation::Vector3d& outgoing,
+        Spectrum& value) const;
 
     // Compute the distance attenuation of this light.
     virtual float compute_distance_attenuation(

@@ -118,6 +118,10 @@ BackwardLightSampler::BackwardLightSampler(
                 importance *= light_info.m_light->get_uncached_importance_multiplier();
                 m_non_physical_lights_cdf.insert(light_index, importance);
             }
+        },
+        [&](const OuterSpacePhysicalLightInfo& light_info)
+        {
+            m_outer_space_physical_lights.push_back(light_info);
         });
     m_non_physical_light_count = m_non_physical_lights.size();
 

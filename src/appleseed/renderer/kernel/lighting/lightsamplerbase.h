@@ -72,6 +72,9 @@ class LightSamplerBase
         LightSample&                        light_sample,
         const float                         light_prob = 1.0f) const;
 
+    // Get Outer Space light vector.
+    std::vector<OuterSpacePhysicalLightInfo> get_outer_space_physical_light_vector() const;
+
   protected:
     struct Parameters
     {
@@ -81,15 +84,18 @@ class LightSamplerBase
     };
 
     typedef std::vector<NonPhysicalLightInfo> NonPhysicalLightVector;
+    typedef std::vector<OuterSpacePhysicalLightInfo> OuterSpacePhysicalLightVector;
     typedef std::vector<EmittingShape> EmittingShapeVector;
     typedef foundation::CDF<size_t, float> EmitterCDF;
 
     typedef std::function<void (const NonPhysicalLightInfo&)> LightHandlingFunction;
+    typedef std::function<void (const OuterSpacePhysicalLightInfo&)> OSLightHandlingFunction;
     typedef std::function<bool (const Material*, const float, const size_t)> ShapeHandlingFunction;
 
     const Parameters                        m_params;
 
     NonPhysicalLightVector                  m_non_physical_lights;
+    OuterSpacePhysicalLightVector           m_outer_space_physical_lights;
     EmittingShapeVector                     m_emitting_shapes;
 
     size_t                                  m_non_physical_light_count;
@@ -126,13 +132,15 @@ class LightSamplerBase
     void collect_non_physical_lights(
         const AssemblyInstanceContainer&    assembly_instances,
         const TransformSequence&            parent_transform_seq,
-        const LightHandlingFunction&        light_handling);
+        const LightHandlingFunction&        light_handling,
+        const OSLightHandlingFunction&      light_handling_2);
 
     // Collect non-physical lights from a given assembly.
     void collect_non_physical_lights(
         const Assembly&                     assembly,
         const TransformSequence&            transform_sequence,
-        const LightHandlingFunction&        light_handling);
+        const LightHandlingFunction&        light_handling,
+        const OSLightHandlingFunction&      light_handling_2);
 
     void store_object_area_in_shadergroups(
         const AssemblyInstance*             assembly_instance,
@@ -163,6 +171,11 @@ class LightSamplerBase
 inline size_t LightSamplerBase::get_non_physical_light_count() const
 {
     return m_non_physical_light_count;
+}
+
+inline std::vector<OuterSpacePhysicalLightInfo> LightSamplerBase::get_outer_space_physical_light_vector() const
+{
+    return m_outer_space_physical_lights;
 }
 
 }   // namespace renderer

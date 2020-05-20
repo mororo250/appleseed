@@ -70,6 +70,16 @@ class NonPhysicalLightInfo
     const Light*        m_light;
 };
 
+//
+//  A outer space light source.
+//
+
+class OuterSpacePhysicalLightInfo
+{
+public:
+   const Light*    m_light;
+};
+
 
 //
 // A light-emitting shape.

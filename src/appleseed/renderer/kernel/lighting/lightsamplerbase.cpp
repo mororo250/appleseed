@@ -34,6 +34,7 @@
 #include "renderer/kernel/intersection/intersector.h"
 #include "renderer/modeling/edf/edf.h"
 #include "renderer/modeling/light/light.h"
+#include "renderer/modeling/light/sunlight.h"
 #include "renderer/modeling/object/diskobject.h"
 #include "renderer/modeling/object/meshobject.h"
 #include "renderer/modeling/object/rectangleobject.h"
@@ -574,7 +575,8 @@ void LightSamplerBase::collect_emitting_shapes(
 void LightSamplerBase::collect_non_physical_lights(
     const AssemblyInstanceContainer&    assembly_instances,
     const TransformSequence&            parent_transform_seq,
-    const LightHandlingFunction&        light_handling)
+    const LightHandlingFunction&        light_handling,
+    const OSLightHandlingFunction&        light_handling_2)
 {
     for (const AssemblyInstance& assembly_instance : assembly_instances)
     {
@@ -590,20 +592,23 @@ void LightSamplerBase::collect_non_physical_lights(
         collect_non_physical_lights(
             assembly.assembly_instances(),
             cumulated_transform_seq,
-            light_handling);
+            light_handling,
+            light_handling_2);
 
         // Collect lights from this assembly.
         collect_non_physical_lights(
             assembly,
             cumulated_transform_seq,
-            light_handling);
+            light_handling,
+            light_handling_2);
     }
 }
 
 void LightSamplerBase::collect_non_physical_lights(
     const Assembly&                     assembly,
     const TransformSequence&            transform_sequence,
-    const LightHandlingFunction&        light_handling)
+    const LightHandlingFunction&        light_handling,
+    const OSLightHandlingFunction&        light_handling_2)
 {
     for (const Light& light : assembly.lights())
     {
@@ -611,6 +616,12 @@ void LightSamplerBase::collect_non_physical_lights(
         light_info.m_transform_sequence = transform_sequence;
         light_info.m_light = &light;
         light_handling(light_info);
+        if (light.get_flags() & Light::HasPhysicalShape)
+        {
+            OuterSpacePhysicalLightInfo light_info;
+            light_info.m_light = &light;
+            light_handling_2(light_info);
+        }
     }
 }
 
