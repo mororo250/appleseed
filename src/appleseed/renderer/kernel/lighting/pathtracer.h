@@ -716,9 +716,9 @@ bool PathTracer<PathVisitor, VolumeVisitor, Adjoint>::process_bounce(
             foundation::Dual3f(vertex.m_outgoing),
             vertex.m_scattering_modes,
             sample);
-
+  
         next_ray.m_min_roughness = m_clamp_roughness ? sample.m_min_roughness : 0.0f;
-
+  
         if (vertex.m_path_length == 1 && sample.get_mode() == ScatteringMode::Diffuse)
             m_path_visitor.on_first_diffuse_bounce(vertex, sample.m_aov_components.m_albedo);
     }

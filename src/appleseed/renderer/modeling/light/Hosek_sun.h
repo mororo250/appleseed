@@ -123,26 +123,26 @@ namespace renderer
 
         InputValues             m_values;
 
-        foundation::RegularSpectrum31f  m_k1;
-        foundation::RegularSpectrum31f  m_k2;
+        foundation::RegularSpectrum43f  m_k1;
+        foundation::RegularSpectrum43f  m_k2;
 
         void apply_env_edf_overrides(EnvironmentEDF* env_edf);
 
         void compute_coefficients(
-            foundation::RegularSpectrum31f&     radiance,
+            foundation::RegularSpectrum43f&     radiance,
             const float                        turbidity,
             const float                        sun_theta) const;
 
         float compute_coefficients2(
             int                     turbidity,
             int                     wavelength,
-            float                   elevation) const;
+            double                   elevation) const;
 
         void compute_sun_radiance(
             const foundation::Vector3d&         outgoing,
             const float                         turbidity,
             const float                         radiance_multiplier,
-            foundation::RegularSpectrum31f&     radiance,
+            foundation::RegularSpectrum43f&     radiance,
             const float                         distance_to_center = 0.0f) const;
 
         void sample_disk(

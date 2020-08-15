@@ -81,10 +81,9 @@ namespace
 
     // Sun's radius, in millions of km.
     // Reference: https://en.wikipedia.org/wiki/Solar_radius
-    constexpr  float SunRadius = 0.6957f;
+    constexpr float SunRadius = 0.6957f;
 
-    // The smallest valid turbidity value.
-    constexpr  float BaseTurbidity = 2.0f;
+    constexpr float solid_angle_Sun = 6.807e-5f;
 }
 
 SunLight::SunLight(
@@ -150,18 +149,15 @@ bool SunLight::on_frame_begin(
     // Reference: https://en.wikipedia.org/wiki/Solid_angle#Sun_and_Moon
     m_sun_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius * m_values.m_size_multiplier / m_values.m_distance)));
 
-    const float default_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius / 149.6f)));
+    //default_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius / 149.6f)));
 
     // Keep sun's irradiance constant for different sizes and distances.
-    m_values.m_radiance_multiplier = m_values.m_radiance_multiplier * default_solid_angle / m_sun_solid_angle;
+    //m_values.m_radiance_multiplier = m_values.m_radiance_multiplier * default_solid_angle / m_sun_solid_angle;
 
     // If the Sun light is bound to an environment EDF, let it override the Sun's direction and turbidity.
     EnvironmentEDF* env_edf = dynamic_cast<EnvironmentEDF*>(m_inputs.get_entity("environment_edf"));
     if (env_edf != nullptr)
         apply_env_edf_overrides(env_edf);
-
-    // Apply turbidity bias.
-    m_values.m_turbidity += BaseTurbidity;
 
     const Scene::RenderData& scene_data = project.get_scene()->get_render_data();
     m_scene_center = Vector3d(scene_data.m_center);
@@ -290,7 +286,7 @@ void SunLight::evaluate(
 
     const double distance_to_center = std::tan(angle) * m_values.m_distance;
 
-    RegularSpectrum31f radiance;
+    RegularSpectrum43f radiance;
     compute_sun_radiance(
         -outgoing,
         m_values.m_turbidity,
@@ -299,13 +295,14 @@ void SunLight::evaluate(
         square(static_cast<float>(distance_to_center)));
 
     value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
+    value /= m_sun_solid_angle;
 }
 
 void SunLight::compute_sun_radiance(
     const Vector3d&         outgoing,
     const float             turbidity,
     const float             radiance_multiplier,
-    RegularSpectrum31f&     radiance,
+    RegularSpectrum43f&     radiance,
     const float             squared_distance_to_center) const
 {
     // Compute the relative optical mass.
@@ -320,20 +317,21 @@ void SunLight::compute_sun_radiance(
     const float m = 1.0f / (cos_theta + 0.15f * std::pow(theta_delta, -1.253f));
 
     // Compute transmittance due to Rayleigh scattering.
-    RegularSpectrum31f tau_r;
-    for (size_t i = 0; i < 31; ++i)
+    RegularSpectrum43f tau_r;
+    for (size_t i = 0; i < 43; ++i)
         tau_r[i] = std::exp(m * m_k1[i]);
 
     // Compute transmittance due to aerosols.
     const float beta = 0.04608f * turbidity - 0.04586f;
-    RegularSpectrum31f tau_a;
-    for (size_t i = 0; i < 31; ++i)
+    RegularSpectrum43f tau_a;
+    for (size_t i = 0; i < 43; ++i)
         tau_a[i] = std::exp(-beta * m * m_k2[i]);
 
     // Compute transmittance due to ozone absorption.
     const float L = 0.0035f;                  // amount of ozone in m
-    static const float Ko[31] =
+    static const float Ko[43] =
     {
+        0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.300f, 0.600f, 0.900f,
         1.400f, 2.100f, 3.000f, 4.000f,
@@ -341,16 +339,16 @@ void SunLight::compute_sun_radiance(
         10.30f, 12.00f, 12.00f, 11.50f,
         12.50f, 12.00f, 10.50f, 9.000f,
         7.900f, 6.700f, 5.700f, 4.800f,
-        3.600f, 2.800f, 2.300f
+        3.600f, 2.800f, 2.300f, 1.800f,
+        1.400f, 1.100f, 1.000f, 0.900f,
+        0.700f, 0.400f, 0.000f 
     };
-    RegularSpectrum31f tau_o;
-    for (size_t i = 0; i < 31; ++i)
+    RegularSpectrum43f tau_o;
+    for (size_t i = 0; i < 43; ++i)
         tau_o[i] = std::exp(-Ko[i] * L * m);
 
-#ifdef COMPUTE_REDUNDANT
     // Compute transmittance due to mixed gases absorption.
-    // Disabled since all coefficients are zero in the wavelength range of the simulation.
-    static const float Kg[31] =
+    static const float Kg[43] =
     {
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
@@ -359,16 +357,18 @@ void SunLight::compute_sun_radiance(
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
-        0.000f, 0.000f, 0.000f
+        0.000f, 0.000f, 0.000f, 0.000f,
+        0.000f, 0.000f, 0.000f, 0.000f,
+        0.000f, 0.000f, 0.000f, 0.000f,
+        3.000f, 0.210f, 0.000f  
     };
-    RegularSpectrum31f tau_g;
-    for (size_t i = 0; i < 31; ++i)
+    RegularSpectrum43f tau_g;
+    for (size_t i = 0; i < 43; ++i)
         tau_g[i] = std::exp(-1.41f * Kg[i] * m / std::pow(1.0f + 118.93f * Kg[i] * m, 0.45f));
-#endif
 
     // Compute transmittance due to water vapor absorption.
     const float W = 0.02f;                   // precipitable water vapor in m
-    static const float Kwa[31] =
+    static const float Kwa[43] =
     {
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
@@ -377,18 +377,21 @@ void SunLight::compute_sun_radiance(
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
         0.000f, 0.000f, 0.000f, 0.000f,
-        0.000f, 1.600f, 2.400f
+        0.000f, 0.000f, 0.000f, 0.000f,
+        0.000f, 1.600f, 2.400f, 1.250f,
+        100.0f, 87.00f, 6.100f, 0.100f,
+        0.001f, 0.001f, 0.060f
+
     };
-    RegularSpectrum31f tau_wa;
-    for (size_t i = 0; i < 31; ++i)
+    RegularSpectrum43f tau_wa;
+    for (size_t i = 0; i < 43; ++i)
         tau_wa[i] = std::exp(-0.2385f * Kwa[i] * W * m / std::pow(1.0f + 20.07f * Kwa[i] * W * m, 0.45f));
 
-    // Sun radiance in W.m^-2.sr^-1.um^-1.
-    // The units in the paper are W.cm^-2.sr^-1.um^-1. We must multiply the values
-    // by 10000 to obtain W.m^-2.sr^-1.um^-1. We must then divide them by 1000 to
-    // obtain W.m^-2.sr^-1.nm^-1.
-    static const float SunRadianceValues[31] =
+    // Sun radiance in W.m^-2.um^-1.
+
+    float SunRadianceValues[43] =
     {
+        0.00000f, 0.00000f, 16559.0f, 16233.7f,
         21127.5f, 25888.2f, 25829.1f, 24232.3f,
         26760.5f, 29658.3f, 30545.4f, 30057.5f,
         30663.7f, 28830.4f, 28712.1f, 27825.0f,
@@ -396,9 +399,14 @@ void SunLight::compute_sun_radiance(
         25060.2f, 25311.6f, 25355.9f, 25134.2f,
         24631.5f, 24173.2f, 23685.3f, 23212.1f,
         22827.7f, 22339.8f, 21970.2f, 21526.7f,
-        21097.9f, 20728.3f, 20240.4f
+        21097.9f, 20728.3f, 20240.4f, 19870.8f,
+        19427.2f, 19072.4f, 18628.9f, 18259.2f
     };
 
+    for (size_t i = 0; i < 43; ++i)
+    {
+        SunRadianceValues[i] *= solid_angle_Sun;
+    }
 
     // Limb darkening.
     //
@@ -419,19 +427,16 @@ void SunLight::compute_sun_radiance(
     }
 
     // Compute the attenuated radiance of the Sun.
-    for (size_t i = 0; i < 31; ++i)
+    for (size_t i = 0; i < 43; ++i)
     {
         radiance[i] =
             SunRadianceValues[i] *
             tau_r[i] *
             tau_a[i] *
             tau_o[i] *
-#ifdef COMPUTE_REDUNDANT
-            tau_g[i] *      // always 1.0
-#endif
+            tau_g[i] *
             tau_wa[i] *
             limb_darkening *
-            m_sun_solid_angle *
             radiance_multiplier;
     }
 }
@@ -486,12 +491,12 @@ void SunLight::apply_env_edf_overrides(EnvironmentEDF* env_edf)
 
 void SunLight::precompute_constants()
 {
-    for (size_t i = 0; i < 31; ++i)
+    for (size_t i = 0; i < 43; ++i)
         m_k1[i] = -0.008735f * std::pow(g_light_wavelengths_um[i], -4.08f);
 
     const float Alpha = 1.3f;               // ratio of small to large particle sizes (0 to 4, typically 1.3)
 
-    for (size_t i = 0; i < 31; ++i)
+    for (size_t i = 0; i < 43; ++i)
         m_k2[i] = std::pow(g_light_wavelengths_um[i], -Alpha);
 }
 
@@ -519,7 +524,7 @@ void SunLight::sample_disk(
     probability = 1.0f / (Pi<float>() * square(static_cast<float>(disk_radius)));
     assert(probability > 0.0f);
 
-    RegularSpectrum31f radiance;
+    RegularSpectrum43f radiance;
     compute_sun_radiance(
         outgoing,
         m_values.m_turbidity,
@@ -537,6 +542,7 @@ void SunLight::sample_disk(
         + disk_radius * p[1] * basis.get_tangent_v();
 
     value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
+    //value *= m_sun_solid_angle;
 }
 
 void SunLight::sample_sun_surface(
@@ -574,7 +580,7 @@ void SunLight::sample_sun_surface(
     double squared_distance_to_center = test[0] * test[0] + test[1] * test[1];
 
 
-    RegularSpectrum31f radiance;
+    RegularSpectrum43f radiance;
     compute_sun_radiance(
         outgoing,
         m_values.m_turbidity,
@@ -665,11 +671,11 @@ DictionaryArray SunLightFactory::get_input_metadata() const
             .insert("type", "numeric")
             .insert("min",
                 Dictionary()
-                    .insert("value", "0.0")
+                    .insert("value", "1.0")
                     .insert("type", "hard"))
             .insert("max",
                 Dictionary()
-                    .insert("value", "8.0")
+                    .insert("value", "10.0")
                     .insert("type", "hard"))
             .insert("use", "required")
             .insert("default", "2.0")

@@ -115,16 +115,17 @@ class SunLight
         float           m_distance;                 // distance between Sun and scene, in millions of km
     };
 
-    bool                    m_visible;               // visible of the sun
+    bool                    m_visible;                  // visible of the sun
     foundation::Vector3d    m_scene_center;             // world space
     double                  m_scene_radius;             // world space
     double                  m_safe_scene_diameter;      // world space
     float                   m_sun_solid_angle;          // Sun's solid angle, in steradians
+    float                   default_solid_angle;        // Sun's solid angle, in steradians
 
     InputValues             m_values;
 
-    foundation::RegularSpectrum31f  m_k1;
-    foundation::RegularSpectrum31f  m_k2;
+    foundation::RegularSpectrum43f  m_k1;
+    foundation::RegularSpectrum43f  m_k2;
 
     void apply_env_edf_overrides(EnvironmentEDF* env_edf);
 
@@ -134,7 +135,7 @@ class SunLight
         const foundation::Vector3d&         outgoing,
         const float                         turbidity,
         const float                         radiance_multiplier,
-        foundation::RegularSpectrum31f&     radiance,
+        foundation::RegularSpectrum43f&     radiance,
         const float                         distance_to_center = 0.0f) const;
 
     void sample_disk(

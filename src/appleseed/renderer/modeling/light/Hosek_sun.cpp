@@ -91,8 +91,7 @@ namespace renderer
         // Reference: https://en.wikipedia.org/wiki/Solar_radius
         constexpr  float SunRadius = 0.6957f;
 
-        // The smallest valid turbidity value.
-        constexpr  float BaseTurbidity = 2.0f;
+        constexpr float solid_angle_sun = 6.807e-5f;
     }
 
     HosekSunLight::HosekSunLight(
@@ -158,18 +157,10 @@ namespace renderer
         // Reference: https://en.wikipedia.org/wiki/Solid_angle#Sun_and_Moon
         m_sun_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius * m_values.m_size_multiplier / m_values.m_distance)));
 
-        //const float default_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius / 149.6f)));
-
-        // Keep sun's irradiance constant for different sizes and distances.
-        //m_values.m_radiance_multiplier = m_values.m_radiance_multiplier * default_solid_angle / m_sun_solid_angle;
-
         // If the Sun light is bound to an environment EDF, let it override the Sun's direction and turbidity.
         EnvironmentEDF* env_edf = dynamic_cast<EnvironmentEDF*>(m_inputs.get_entity("environment_edf"));
         if (env_edf != nullptr)
             apply_env_edf_overrides(env_edf);
-
-        // Apply turbidity bias.
-        m_values.m_turbidity += BaseTurbidity;
 
         const Scene::RenderData& scene_data = project.get_scene()->get_render_data();
         m_scene_center = Vector3d(scene_data.m_center);
@@ -296,7 +287,7 @@ namespace renderer
 
         const double distance_to_center = std::tan(angle) * m_values.m_distance;
 
-        RegularSpectrum31f radiance;
+        RegularSpectrum43f radiance;
         compute_sun_radiance(
             -outgoing,
             m_values.m_turbidity,
@@ -305,13 +296,14 @@ namespace renderer
             square(static_cast<float>(distance_to_center)));
 
         value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
+        value /= m_sun_solid_angle;
     }
 
     void HosekSunLight::compute_sun_radiance(
         const Vector3d&         outgoing,
         const float             turbidity,
         const float             radiance_multiplier,
-        RegularSpectrum31f&     radiance,
+        RegularSpectrum43f&     radiance,
         const float             squared_distance_to_center) const
     {
         const float cos_theta = -static_cast<float>(outgoing.y);
@@ -337,16 +329,16 @@ namespace renderer
         {
             limb_darkening = (1.0f - LimbDarkeningCoeficent *
                 (1.0f - std::sqrt(1.0f - squared_distance_to_center
-                    / square(SunRadius * m_values.m_size_multiplier))));
+                / square(SunRadius * m_values.m_size_multiplier))));
         }
 
         // Compute the attenuated radiance of the Sun.
-        for (size_t i = 0; i < 31; ++i)
+        for (size_t i = 0; i < 43; ++i)
         {
             radiance[i] *=
                 limb_darkening *
                 radiance_multiplier *
-                m_sun_solid_angle;
+                solid_angle_sun;
         }
     }
 
@@ -401,46 +393,46 @@ namespace renderer
     float HosekSunLight::compute_coefficients2(
         int                     turbidity,
         int                     wl,
-        float                   elevation) const
+        double                   elevation) const
     {
         constexpr int Pieces = 45;
         constexpr int Order = 4;
 
         int pos =
-            (int)(pow(2.0f * elevation / Pi<float>(), 1.0f / 3.0f) * Pieces); // floor
+            static_cast<int>(pow(2.0f * elevation / Pi<float>(), 1.0f / 3.0f) * Pieces); // floor
 
         if (pos > 44) pos = 44;
 
-        const float break_x =
-            pow(((float)pos / (float)Pieces), 3.0f) * (HalfPi<float>());
+        const double break_x =
+            pow((static_cast<double>(pos) / static_cast<double>(Pieces)), 3.0f) * (HalfPi<double>());
 
         const double* coefs =
             solarDatasets[wl] + (Order * Pieces * turbidity + Order * (pos + 1) - 1);
 
-        float res = 0.0f;
-        const float x = elevation - break_x;
-        float x_exp = 1.0f;
+        double res = 0.0f;
+        const double x = elevation - break_x;
+        double x_exp = 1.0f;
 
         for (int i = 0; i < Order; ++i)
         {
-            res += x_exp * static_cast<float>(*coefs--);
+            res += x_exp * *coefs--;
             x_exp *= x;
         }
 
-        return res;
+        return static_cast<float>(res);
     }
 
     void HosekSunLight::compute_coefficients(
-        RegularSpectrum31f&     radiance,
+        RegularSpectrum43f&     radiance,
         const float             turbidity,
         const float             sun_theta) const
     {
-        const float clamped_turbidity = clamp(turbidity, 1.0f, 10.0f) - 1.0f;
+        const float clamped_turbidity = clamp(turbidity, 1.0f, 10.0f);
         int turbidity_low = truncate<int>(clamped_turbidity) - 1;
         float turbidity_frac = clamped_turbidity - static_cast<float>(turbidity_low + 1);
 
         // Compute solar elevation.
-        const float eta = HalfPi<float>() - sun_theta;
+        const double eta = HalfPi<double>() - static_cast<double>(sun_theta);
 
         if (turbidity_low == 9)
         {
@@ -449,12 +441,18 @@ namespace renderer
         }
 
         int i = 0;
-        for (float wavelength = 400.0f; wavelength <= 700.0f; wavelength += 10.0f, i++)
+        for (float wavelength = 360.0f; wavelength <= 780.0f; wavelength += 10.0f, i++)
         {
-            int    wl_low = (int)((wavelength - 320.0f) / 40.0f);
+            if (wavelength > 720.0f)
+            {
+                radiance[i] = 0.0f;
+                continue;
+            }
+
+            int   wl_low = (int)((wavelength - 320.0f) / 40.0f);
             float wl_frac =  fmod(wavelength, 40.0f) / 40.0f;
 
-            if (wl_low == 10)
+            if (wl_low >= 10)
             {
                 wl_low = 9;
                 wl_frac = 1.0f;
@@ -494,7 +492,7 @@ namespace renderer
         probability = 1.0f / (Pi<float>() * square(static_cast<float>(disk_radius)));
         assert(probability > 0.0f);
 
-        RegularSpectrum31f radiance;
+        RegularSpectrum43f radiance;
         compute_sun_radiance(
             outgoing,
             m_values.m_turbidity,
@@ -549,7 +547,7 @@ namespace renderer
         double squared_distance_to_center = test[0] * test[0] + test[1] * test[1];
 
 
-        RegularSpectrum31f radiance;
+        RegularSpectrum43f radiance;
         compute_sun_radiance(
             outgoing,
             m_values.m_turbidity,
@@ -583,7 +581,7 @@ namespace renderer
         // density by the Sun disk's surface area, which leaves us with probability = 1.
         //
 
-        probability = 1.0f / (Pi<float>() * square(static_cast<float>(sun_radius)));
+        probability = 1.0f;
     }
 
 

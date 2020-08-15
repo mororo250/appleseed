@@ -45,11 +45,11 @@ namespace renderer
 // Wavelengths used throughout the spectral light simulation.
 //
 
-const float LowWavelength = 400.0f;                             // low wavelength, in nm
-const float HighWavelength = 700.0f;                            // high wavelength, in nm
+constexpr float LowWavelength = 360.0f;                             // low wavelength, in nm
+constexpr float HighWavelength = 780.0f;                            // high wavelength, in nm
 
-extern foundation::RegularSpectrum31f g_light_wavelengths_nm;   // wavelengths, in nm
-extern foundation::RegularSpectrum31f g_light_wavelengths_um;   // wavelengths, in um
+extern foundation::RegularSpectrum43f g_light_wavelengths_nm;   // wavelengths, in nm
+extern foundation::RegularSpectrum43f g_light_wavelengths_um;   // wavelengths, in um
 
 
 //
@@ -69,6 +69,6 @@ APPLESEED_DLLSYMBOL void spectral_values_to_spectrum(
     const float                         high_wavelength,
     const size_t                        input_spectrum_count,
     const float                         input_spectrum[],
-    foundation::RegularSpectrum31f&     output_spectrum);
+    foundation::RegularSpectrum43f&     output_spectrum);
 
 }   // namespace renderer

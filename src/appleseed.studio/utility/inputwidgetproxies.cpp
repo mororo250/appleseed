@@ -299,7 +299,7 @@ namespace
                 return Color3f(values[0], values[1], values[2]);
             else if (low_wavelength < high_wavelength)
             {
-                RegularSpectrum31f output_spectrum;
+                RegularSpectrum43f output_spectrum;
                 spectral_values_to_spectrum(
                     low_wavelength,
                     high_wavelength,

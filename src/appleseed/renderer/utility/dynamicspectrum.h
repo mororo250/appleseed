@@ -185,8 +185,8 @@ template <typename T, size_t N> void madd(DynamicSpectrum<T, N>& a, const Dynami
 // Full specializations for spectra of type float and double.
 //
 
-typedef DynamicSpectrum<float,  31> DynamicSpectrum31f;
-typedef DynamicSpectrum<double, 31> DynamicSpectrum31d;
+typedef DynamicSpectrum<float,  43> DynamicSpectrum43f;
+typedef DynamicSpectrum<double, 43> DynamicSpectrum43d;
 
 }   // namespace renderer
 
@@ -288,7 +288,7 @@ namespace renderer
 
 // Full specialization is required in the value for Apple LLVM version 7.0.0 (clang-700.1.76).
 template <typename T, size_t N>
-APPLESEED_TLS typename DynamicSpectrum<T, N>::Mode DynamicSpectrum<T, N>::s_mode = DynamicSpectrum<float, 31>::RGB;
+APPLESEED_TLS typename DynamicSpectrum<T, N>::Mode DynamicSpectrum<T, N>::s_mode = DynamicSpectrum<float, 43>::RGB;
 
 template <typename T, size_t N>
 APPLESEED_TLS size_t DynamicSpectrum<T, N>::s_size = 3;
@@ -397,7 +397,7 @@ inline void DynamicSpectrum<T, N>::set(const ValueType val)
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE void DynamicSpectrum<float, 31>::set(const float val)
+APPLESEED_FORCE_INLINE void DynamicSpectrum<float, 43>::set(const float val)
 {
     const __m128 mval = _mm_set1_ps(val);
 
@@ -412,6 +412,9 @@ APPLESEED_FORCE_INLINE void DynamicSpectrum<float, 31>::set(const float val)
         _mm_store_ps(&m_samples[20], mval);
         _mm_store_ps(&m_samples[24], mval);
         _mm_store_ps(&m_samples[28], mval);
+        _mm_store_ps(&m_samples[32], mval);
+        _mm_store_ps(&m_samples[36], mval);
+        _mm_store_ps(&m_samples[40], mval);
     }
 }
 
@@ -663,11 +666,10 @@ inline DynamicSpectrum<T, N>& operator+=(DynamicSpectrum<T, N>& lhs, const Dynam
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator+=(DynamicSpectrum<float, 31>& lhs, const DynamicSpectrum<float, 31>& rhs)
-{
+APPLESEED_FORCE_INLINE DynamicSpectrum<float, 43>& operator+=(DynamicSpectrum<float, 43>& lhs, const DynamicSpectrum<float, 43>& rhs) {
     _mm_store_ps(&lhs[ 0], _mm_add_ps(_mm_load_ps(&lhs[ 0]), _mm_load_ps(&rhs[ 0])));
 
-    if (DynamicSpectrum<float, 31>::size() > 3)
+    if (DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&lhs[ 4], _mm_add_ps(_mm_load_ps(&lhs[ 4]), _mm_load_ps(&rhs[ 4])));
         _mm_store_ps(&lhs[ 8], _mm_add_ps(_mm_load_ps(&lhs[ 8]), _mm_load_ps(&rhs[ 8])));
@@ -676,6 +678,9 @@ APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator+=(DynamicSpectrum<fl
         _mm_store_ps(&lhs[20], _mm_add_ps(_mm_load_ps(&lhs[20]), _mm_load_ps(&rhs[20])));
         _mm_store_ps(&lhs[24], _mm_add_ps(_mm_load_ps(&lhs[24]), _mm_load_ps(&rhs[24])));
         _mm_store_ps(&lhs[28], _mm_add_ps(_mm_load_ps(&lhs[28]), _mm_load_ps(&rhs[28])));
+        _mm_store_ps(&lhs[32], _mm_add_ps(_mm_load_ps(&lhs[32]), _mm_load_ps(&rhs[32])));
+        _mm_store_ps(&lhs[36], _mm_add_ps(_mm_load_ps(&lhs[36]), _mm_load_ps(&rhs[36])));
+        _mm_store_ps(&lhs[40], _mm_add_ps(_mm_load_ps(&lhs[40]), _mm_load_ps(&rhs[40])));
     }
 
     return lhs;
@@ -704,13 +709,13 @@ inline DynamicSpectrum<T, N>& operator*=(DynamicSpectrum<T, N>& lhs, const T rhs
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator*=(DynamicSpectrum<float, 31>& lhs, const float rhs)
+APPLESEED_FORCE_INLINE DynamicSpectrum<float, 43>& operator*=(DynamicSpectrum<float, 43>& lhs, const float rhs)
 {
     const __m128 mrhs = _mm_set1_ps(rhs);
 
     _mm_store_ps(&lhs[ 0], _mm_mul_ps(_mm_load_ps(&lhs[ 0]), mrhs));
 
-    if (DynamicSpectrum<float, 31>::size() > 3)
+    if (DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&lhs[ 4], _mm_mul_ps(_mm_load_ps(&lhs[ 4]), mrhs));
         _mm_store_ps(&lhs[ 8], _mm_mul_ps(_mm_load_ps(&lhs[ 8]), mrhs));
@@ -719,6 +724,9 @@ APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator*=(DynamicSpectrum<fl
         _mm_store_ps(&lhs[20], _mm_mul_ps(_mm_load_ps(&lhs[20]), mrhs));
         _mm_store_ps(&lhs[24], _mm_mul_ps(_mm_load_ps(&lhs[24]), mrhs));
         _mm_store_ps(&lhs[28], _mm_mul_ps(_mm_load_ps(&lhs[28]), mrhs));
+        _mm_store_ps(&lhs[32], _mm_mul_ps(_mm_load_ps(&lhs[32]), mrhs));
+        _mm_store_ps(&lhs[36], _mm_mul_ps(_mm_load_ps(&lhs[36]), mrhs));
+        _mm_store_ps(&lhs[40], _mm_mul_ps(_mm_load_ps(&lhs[40]), mrhs));
     }
 
     return lhs;
@@ -738,11 +746,11 @@ inline DynamicSpectrum<T, N>& operator*=(DynamicSpectrum<T, N>& lhs, const Dynam
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator*=(DynamicSpectrum<float, 31>& lhs, const DynamicSpectrum<float, 31>& rhs)
+APPLESEED_FORCE_INLINE DynamicSpectrum<float, 43>& operator*=(DynamicSpectrum<float, 43>& lhs, const DynamicSpectrum<float, 43>& rhs)
 {
     _mm_store_ps(&lhs[ 0], _mm_mul_ps(_mm_load_ps(&lhs[ 0]), _mm_load_ps(&rhs[ 0])));
 
-    if (DynamicSpectrum<float, 31>::size() > 3)
+    if (DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&lhs[ 4], _mm_mul_ps(_mm_load_ps(&lhs[ 4]), _mm_load_ps(&rhs[ 4])));
         _mm_store_ps(&lhs[ 8], _mm_mul_ps(_mm_load_ps(&lhs[ 8]), _mm_load_ps(&rhs[ 8])));
@@ -751,6 +759,9 @@ APPLESEED_FORCE_INLINE DynamicSpectrum<float, 31>& operator*=(DynamicSpectrum<fl
         _mm_store_ps(&lhs[20], _mm_mul_ps(_mm_load_ps(&lhs[20]), _mm_load_ps(&rhs[20])));
         _mm_store_ps(&lhs[24], _mm_mul_ps(_mm_load_ps(&lhs[24]), _mm_load_ps(&rhs[24])));
         _mm_store_ps(&lhs[28], _mm_mul_ps(_mm_load_ps(&lhs[28]), _mm_load_ps(&rhs[28])));
+        _mm_store_ps(&lhs[32], _mm_mul_ps(_mm_load_ps(&lhs[32]), _mm_load_ps(&rhs[32])));
+        _mm_store_ps(&lhs[36], _mm_mul_ps(_mm_load_ps(&lhs[36]), _mm_load_ps(&rhs[36])));
+        _mm_store_ps(&lhs[40], _mm_mul_ps(_mm_load_ps(&lhs[40]), _mm_load_ps(&rhs[40])));
     }
 
     return lhs;
@@ -818,13 +829,13 @@ inline void madd(
 
 template <>
 APPLESEED_FORCE_INLINE void madd(
-    DynamicSpectrum<float, 31>&             a,
-    const DynamicSpectrum<float, 31>&       b,
-    const DynamicSpectrum<float, 31>&       c)
+    DynamicSpectrum<float, 43>&         a,
+    const DynamicSpectrum<float, 43>&   b,
+    const DynamicSpectrum<float, 43>&   c)
 {
     _mm_store_ps(&a[0], _mm_add_ps(_mm_load_ps(&a[0]), _mm_mul_ps(_mm_load_ps(&b[0]), _mm_load_ps(&c[0]))));
 
-    if (DynamicSpectrum<float, 31>::size() > 3)
+    if (DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&a[ 4], _mm_add_ps(_mm_load_ps(&a[ 4]), _mm_mul_ps(_mm_load_ps(&b[ 4]), _mm_load_ps(&c[ 4]))));
         _mm_store_ps(&a[ 8], _mm_add_ps(_mm_load_ps(&a[ 8]), _mm_mul_ps(_mm_load_ps(&b[ 8]), _mm_load_ps(&c[ 8]))));
@@ -833,20 +844,23 @@ APPLESEED_FORCE_INLINE void madd(
         _mm_store_ps(&a[20], _mm_add_ps(_mm_load_ps(&a[20]), _mm_mul_ps(_mm_load_ps(&b[20]), _mm_load_ps(&c[20]))));
         _mm_store_ps(&a[24], _mm_add_ps(_mm_load_ps(&a[24]), _mm_mul_ps(_mm_load_ps(&b[24]), _mm_load_ps(&c[24]))));
         _mm_store_ps(&a[28], _mm_add_ps(_mm_load_ps(&a[28]), _mm_mul_ps(_mm_load_ps(&b[28]), _mm_load_ps(&c[28]))));
+        _mm_store_ps(&a[32], _mm_add_ps(_mm_load_ps(&a[32]), _mm_mul_ps(_mm_load_ps(&b[32]), _mm_load_ps(&c[32]))));
+        _mm_store_ps(&a[36], _mm_add_ps(_mm_load_ps(&a[36]), _mm_mul_ps(_mm_load_ps(&b[36]), _mm_load_ps(&c[36]))));
+        _mm_store_ps(&a[40], _mm_add_ps(_mm_load_ps(&a[40]), _mm_mul_ps(_mm_load_ps(&b[40]), _mm_load_ps(&c[40]))));
     }
 }
 
 template <>
 APPLESEED_FORCE_INLINE void madd(
-    DynamicSpectrum<float, 31>&             a,
-    const DynamicSpectrum<float, 31>&       b,
+    DynamicSpectrum<float, 43>&             a,
+    const DynamicSpectrum<float, 43>&       b,
     const float                             c)
 {
     const __m128 k = _mm_set_ps1(c);
 
     _mm_store_ps(&a[0], _mm_add_ps(_mm_load_ps(&a[0]), _mm_mul_ps(_mm_load_ps(&b[0]), k)));
 
-    if (DynamicSpectrum<float, 31>::size() > 3)
+    if (DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&a[ 4], _mm_add_ps(_mm_load_ps(&a[ 4]), _mm_mul_ps(_mm_load_ps(&b[ 4]), k)));
         _mm_store_ps(&a[ 8], _mm_add_ps(_mm_load_ps(&a[ 8]), _mm_mul_ps(_mm_load_ps(&b[ 8]), k)));
@@ -855,6 +869,9 @@ APPLESEED_FORCE_INLINE void madd(
         _mm_store_ps(&a[20], _mm_add_ps(_mm_load_ps(&a[20]), _mm_mul_ps(_mm_load_ps(&b[20]), k)));
         _mm_store_ps(&a[24], _mm_add_ps(_mm_load_ps(&a[24]), _mm_mul_ps(_mm_load_ps(&b[24]), k)));
         _mm_store_ps(&a[28], _mm_add_ps(_mm_load_ps(&a[28]), _mm_mul_ps(_mm_load_ps(&b[28]), k)));
+        _mm_store_ps(&a[32], _mm_add_ps(_mm_load_ps(&a[32]), _mm_mul_ps(_mm_load_ps(&b[32]), k)));
+        _mm_store_ps(&a[36], _mm_add_ps(_mm_load_ps(&a[36]), _mm_mul_ps(_mm_load_ps(&b[36]), k)));
+        _mm_store_ps(&a[40], _mm_add_ps(_mm_load_ps(&a[40]), _mm_mul_ps(_mm_load_ps(&b[40]), k)));
     }
 }
 
@@ -951,13 +968,13 @@ inline renderer::DynamicSpectrum<T, N> sqrt(const renderer::DynamicSpectrum<T, N
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 31> sqrt(const renderer::DynamicSpectrum<float, 31>& s)
+APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 43> sqrt(const renderer::DynamicSpectrum<float, 43>& s)
 {
-    renderer::DynamicSpectrum<float, 31> result;
+    renderer::DynamicSpectrum<float, 43> result;
 
     _mm_store_ps(&result[ 0], _mm_sqrt_ps(_mm_load_ps(&s[ 0])));
 
-    if (renderer::DynamicSpectrum<float, 31>::size() > 3)
+    if (renderer::DynamicSpectrum<float, 43>::size() > 3)
     {
         _mm_store_ps(&result[ 4], _mm_sqrt_ps(_mm_load_ps(&s[ 4])));
         _mm_store_ps(&result[ 8], _mm_sqrt_ps(_mm_load_ps(&s[ 8])));
@@ -966,6 +983,9 @@ APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 31> sqrt(const renderer:
         _mm_store_ps(&result[20], _mm_sqrt_ps(_mm_load_ps(&s[20])));
         _mm_store_ps(&result[24], _mm_sqrt_ps(_mm_load_ps(&s[24])));
         _mm_store_ps(&result[28], _mm_sqrt_ps(_mm_load_ps(&s[28])));
+        _mm_store_ps(&result[32], _mm_sqrt_ps(_mm_load_ps(&s[32])));
+        _mm_store_ps(&result[36], _mm_sqrt_ps(_mm_load_ps(&s[36])));
+        _mm_store_ps(&result[40], _mm_sqrt_ps(_mm_load_ps(&s[40])));
     }
 
     return result;
@@ -1131,12 +1151,12 @@ inline renderer::DynamicSpectrum<T, N> lerp(
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 31> lerp(
-    const renderer::DynamicSpectrum<float, 31>& a,
-    const renderer::DynamicSpectrum<float, 31>& b,
-    const renderer::DynamicSpectrum<float, 31>& t)
+APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 43> lerp(
+    const renderer::DynamicSpectrum<float, 43>& a,
+    const renderer::DynamicSpectrum<float, 43>& b,
+    const renderer::DynamicSpectrum<float, 43>& t)
 {
-    renderer::DynamicSpectrum<float, 31> result;
+    renderer::DynamicSpectrum<float, 43> result;
 
     __m128 one4 = _mm_set1_ps(1.0f);
     __m128 t4 = _mm_load_ps(&t[0]);
@@ -1145,7 +1165,7 @@ APPLESEED_FORCE_INLINE renderer::DynamicSpectrum<float, 31> lerp(
     __m128 y = _mm_mul_ps(_mm_load_ps(&b[0]), t4);
     _mm_store_ps(&result[0], _mm_add_ps(x, y));
 
-    if (renderer::DynamicSpectrum<float, 31>::size() > 3)
+    if (renderer::DynamicSpectrum<float, 43>::size() > 3)
     {
         for (size_t i = 4; i < a.StoredSamples; i += 4)
         {

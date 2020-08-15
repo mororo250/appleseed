@@ -12,12 +12,12 @@
     <parameters name="ui">
         <parameters name="file_dialog">
             <parameters name="frames">
-                <parameter name="last_directory" value="D:\Gsoc-sun-sky\Applessed_sun_sky_comparison" />
+                <parameter name="last_directory" value="F:\Documents" />
                 <parameter name="selected_filter" value="JPEG Files (*.jpg *.jpe *.jpeg *.jif *.jfif *.jfi)" />
             </parameters>
             <parameters name="projects">
-                <parameter name="last_directory" value="D:\appleseed-scenes" />
-                <parameter name="selected_filter" value="Plain Project Files (*.appleseed)" />
+                <parameter name="last_directory" value="F:\Documents" />
+                <parameter name="selected_filter" value="Bitmap Files (*.bmp *.cin *.dds *.dpx *.fits *.hdr *.rgbe *.ico *.iff *.z *.jpg *.jpe *.jpeg *.jif *.jfif *.jfi *.null *.nul *.exr *.sxr *.mxr *.png *.ppm *.pgm *.pbm *.pnm *.pfm *.psd *.pdd *.psb *.rla *.sgi *.rgb *.rgba *.bw *.int *.inta *.socket *.pic *.tif *.tiff *.tx *.env *.sm *.vsm *.tga *.tpic *.zfile)" />
             </parameters>
         </parameters>
         <parameters name="render_region">

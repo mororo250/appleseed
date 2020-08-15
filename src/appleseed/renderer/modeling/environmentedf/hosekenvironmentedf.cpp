@@ -90,9 +90,6 @@ namespace
 
     const char* Model = "hosek_environment_edf";
 
-    // The smallest valid turbidity value.
-    const float BaseTurbidity = 2.0f;
-
     class HosekEnvironmentEDF
       : public EnvironmentEDF
     {
@@ -137,7 +134,7 @@ namespace
             m_inputs.evaluate_uniforms(&m_uniform_values);
 
             // If there is a bound sun get it.
-            m_sun = dynamic_cast<SunLight*>(m_inputs.get_entity("sun_light"));
+            m_sun = dynamic_cast<HosekSunLight*>(m_inputs.get_entity("sun_light"));
 
             // Compute the sun direction.
             m_sun_theta = deg_to_rad(m_uniform_values.m_sun_theta);
@@ -151,7 +148,6 @@ namespace
             {
                 // Apply turbidity multiplier and bias.
                 m_uniform_values.m_turbidity *= m_uniform_values.m_turbidity_multiplier;
-                m_uniform_values.m_turbidity += BaseTurbidity;
 
                 compute_coefficients(
                     m_uniform_values.m_turbidity,
@@ -178,7 +174,7 @@ namespace
             outgoing = transform.vector_to_parent(local_outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else radiance.set(0.0f);
@@ -204,7 +200,7 @@ namespace
             const Vector3f local_outgoing = transform.vector_to_local(outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else radiance.set(0.0f);
@@ -230,14 +226,14 @@ namespace
             const Vector3f local_outgoing = transform.vector_to_local(outgoing);
             const Vector3f shifted_outgoing = shift(local_outgoing);
 
-            RegularSpectrum31f radiance;
+            RegularSpectrum43f radiance;
             if (shifted_outgoing.y > 0.0f)
                 compute_sky_radiance(shading_context, shifted_outgoing, radiance);
             else
                 radiance.set(0.0f);
 
             value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
-            value += sun_value;
+            //value += sun_value;
             probability = shifted_outgoing.y > 0.0f ? shifted_outgoing.y * RcpPi<float>() : 0.0f;
             assert(probability >= 0.0f);
         }
@@ -282,7 +278,7 @@ namespace
         float                       m_uniform_coeffs[3 * 9];
         float                       m_uniform_master_Y[3];
 
-        SunLight*                   m_sun;
+        HosekSunLight*                   m_sun;
 
         // Compute the coefficients of the radiance distribution function and the master luminance value.
         static void compute_coefficients(
@@ -401,7 +397,7 @@ namespace
         void compute_sky_radiance(
             const ShadingContext&   shading_context,
             const Vector3f&         outgoing,
-            RegularSpectrum31f&     radiance) const
+            RegularSpectrum43f&     radiance) const
         {
             if (m_uniform_values.m_luminance_multiplier == 0.0f)
             {
@@ -435,7 +431,6 @@ namespace
 
                 // Apply turbidity multiplier and bias.
                 turbidity *= m_uniform_values.m_turbidity_multiplier;
-                turbidity += BaseTurbidity;
 
                 // Compute the coefficients of the radiance distribution function and the master luminance value.
                 float coeffs[3 * 9], master_Y[3];

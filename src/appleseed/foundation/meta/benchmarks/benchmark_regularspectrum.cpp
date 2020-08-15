@@ -33,12 +33,12 @@
 
 using namespace foundation;
 
-BENCHMARK_SUITE(Foundation_Image_RegularSpectrum31f)
+BENCHMARK_SUITE(Foundation_Image_RegularSpectrum43f)
 {
     struct Fixture
     {
-        RegularSpectrum31f  m_spectrum1;
-        RegularSpectrum31f  m_spectrum2;
+        RegularSpectrum43f  m_spectrum1;
+        RegularSpectrum43f  m_spectrum2;
 
         Fixture()
           : m_spectrum1(42.0f)

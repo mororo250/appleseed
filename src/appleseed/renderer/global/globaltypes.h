@@ -64,7 +64,7 @@ typedef foundation::RayInfo<GScalar, 3> GRayInfo3;
 
 // Spectrum representation.
 #ifdef APPLESEED_WITH_SPECTRAL_SUPPORT
-typedef DynamicSpectrum31f Spectrum;
+typedef DynamicSpectrum43f Spectrum;
 #else
 typedef RGBSpectrumf Spectrum;
 #endif

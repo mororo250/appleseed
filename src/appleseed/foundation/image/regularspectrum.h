@@ -180,8 +180,8 @@ template <typename T, size_t N> bool is_finite_non_neg(const RegularSpectrum<T, 
 // Full specializations for spectra of type float and double.
 //
 
-typedef RegularSpectrum<float,  31> RegularSpectrum31f;
-typedef RegularSpectrum<double, 31> RegularSpectrum31d;
+typedef RegularSpectrum<float,  43> RegularSpectrum43f;
+typedef RegularSpectrum<double, 43> RegularSpectrum43d;
 
 
 //
@@ -246,7 +246,7 @@ inline void RegularSpectrum<T, N>::set(const ValueType val)
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE void RegularSpectrum<float, 31>::set(const float val)
+APPLESEED_FORCE_INLINE void RegularSpectrum<float, 43>::set(const float val)
 {
     const __m128 mval = _mm_set1_ps(val);
 
@@ -258,6 +258,9 @@ APPLESEED_FORCE_INLINE void RegularSpectrum<float, 31>::set(const float val)
     _mm_store_ps(&m_samples[20], mval);
     _mm_store_ps(&m_samples[24], mval);
     _mm_store_ps(&m_samples[28], mval);
+    _mm_store_ps(&m_samples[32], mval);
+    _mm_store_ps(&m_samples[36], mval);
+    _mm_store_ps(&m_samples[40], mval);
 }
 
 #endif  // APPLESEED_USE_SSE
@@ -477,6 +480,9 @@ APPLESEED_FORCE_INLINE RegularSpectrum<float, 31>& operator+=(RegularSpectrum<fl
     _mm_store_ps(&lhs[20], _mm_add_ps(_mm_load_ps(&lhs[20]), _mm_load_ps(&rhs[20])));
     _mm_store_ps(&lhs[24], _mm_add_ps(_mm_load_ps(&lhs[24]), _mm_load_ps(&rhs[24])));
     _mm_store_ps(&lhs[28], _mm_add_ps(_mm_load_ps(&lhs[28]), _mm_load_ps(&rhs[28])));
+    _mm_store_ps(&lhs[32], _mm_add_ps(_mm_load_ps(&lhs[32]), _mm_load_ps(&rhs[32])));
+    _mm_store_ps(&lhs[36], _mm_add_ps(_mm_load_ps(&lhs[36]), _mm_load_ps(&rhs[36])));
+    _mm_store_ps(&lhs[40], _mm_add_ps(_mm_load_ps(&lhs[40]), _mm_load_ps(&rhs[40])));
 
     return lhs;
 }
@@ -504,7 +510,7 @@ inline RegularSpectrum<T, N>& operator*=(RegularSpectrum<T, N>& lhs, const T rhs
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE RegularSpectrum<float, 31>& operator*=(RegularSpectrum<float, 31>& lhs, const float rhs)
+APPLESEED_FORCE_INLINE RegularSpectrum<float, 43>& operator*=(RegularSpectrum<float, 43>& lhs, const float rhs)
 {
     const __m128 mrhs = _mm_set1_ps(rhs);
 
@@ -516,6 +522,9 @@ APPLESEED_FORCE_INLINE RegularSpectrum<float, 31>& operator*=(RegularSpectrum<fl
     _mm_store_ps(&lhs[20], _mm_mul_ps(_mm_load_ps(&lhs[20]), mrhs));
     _mm_store_ps(&lhs[24], _mm_mul_ps(_mm_load_ps(&lhs[24]), mrhs));
     _mm_store_ps(&lhs[28], _mm_mul_ps(_mm_load_ps(&lhs[28]), mrhs));
+    _mm_store_ps(&lhs[32], _mm_mul_ps(_mm_load_ps(&lhs[32]), mrhs));
+    _mm_store_ps(&lhs[36], _mm_mul_ps(_mm_load_ps(&lhs[36]), mrhs));
+    _mm_store_ps(&lhs[40], _mm_mul_ps(_mm_load_ps(&lhs[40]), mrhs));
 
     return lhs;
 }
@@ -534,7 +543,7 @@ inline RegularSpectrum<T, N>& operator*=(RegularSpectrum<T, N>& lhs, const Regul
 #ifdef APPLESEED_USE_SSE
 
 template <>
-APPLESEED_FORCE_INLINE RegularSpectrum<float, 31>& operator*=(RegularSpectrum<float, 31>& lhs, const RegularSpectrum<float, 31>& rhs)
+APPLESEED_FORCE_INLINE RegularSpectrum<float, 43>& operator*=(RegularSpectrum<float, 43>& lhs, const RegularSpectrum<float, 43>& rhs)
 {
     _mm_store_ps(&lhs[ 0], _mm_mul_ps(_mm_load_ps(&lhs[ 0]), _mm_load_ps(&rhs[ 0])));
     _mm_store_ps(&lhs[ 4], _mm_mul_ps(_mm_load_ps(&lhs[ 4]), _mm_load_ps(&rhs[ 4])));
@@ -544,6 +553,9 @@ APPLESEED_FORCE_INLINE RegularSpectrum<float, 31>& operator*=(RegularSpectrum<fl
     _mm_store_ps(&lhs[20], _mm_mul_ps(_mm_load_ps(&lhs[20]), _mm_load_ps(&rhs[20])));
     _mm_store_ps(&lhs[24], _mm_mul_ps(_mm_load_ps(&lhs[24]), _mm_load_ps(&rhs[24])));
     _mm_store_ps(&lhs[28], _mm_mul_ps(_mm_load_ps(&lhs[28]), _mm_load_ps(&rhs[28])));
+    _mm_store_ps(&lhs[32], _mm_mul_ps(_mm_load_ps(&lhs[32]), _mm_load_ps(&rhs[32])));
+    _mm_store_ps(&lhs[36], _mm_mul_ps(_mm_load_ps(&lhs[36]), _mm_load_ps(&rhs[36])));
+    _mm_store_ps(&lhs[40], _mm_mul_ps(_mm_load_ps(&lhs[40]), _mm_load_ps(&rhs[40])));
 
     return lhs;
 }

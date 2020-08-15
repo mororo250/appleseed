@@ -35,69 +35,69 @@
 using namespace foundation;
 using namespace renderer;
 
-BENCHMARK_SUITE(Renderer_Utility_DynamicSpectrum31f)
+BENCHMARK_SUITE(Renderer_Utility_DynamicSpectrum43f)
 {
-    template <DynamicSpectrum31f::Mode Mode>
+    template <DynamicSpectrum43f::Mode Mode>
     struct Fixture
     {
-        const DynamicSpectrum31f::Mode  m_old_mode;
-        DynamicSpectrum31f              m_black;
-        DynamicSpectrum31f              m_white;
+        const DynamicSpectrum43f::Mode  m_old_mode;
+        DynamicSpectrum43f              m_black;
+        DynamicSpectrum43f              m_white;
         bool                            m_is_zero_result;
         float                           m_max_value_result;
 
         Fixture()
-          : m_old_mode(DynamicSpectrum31f::set_mode(Mode))
+          : m_old_mode(DynamicSpectrum43f::set_mode(Mode))
           , m_is_zero_result(true)
           , m_max_value_result(0.0f)
         {
             // Must be initialized after setting the dynamic spectrum mode.
-            m_black = DynamicSpectrum31f(0.0f);
-            m_white = DynamicSpectrum31f(1.0f);
+            m_black = DynamicSpectrum43f(0.0f);
+            m_white = DynamicSpectrum43f(1.0f);
         }
 
         ~Fixture()
         {
-            DynamicSpectrum31f::set_mode(m_old_mode);
+            DynamicSpectrum43f::set_mode(m_old_mode);
         }
     };
 
-    BENCHMARK_CASE_F(IsZero_Black_RGB, Fixture<DynamicSpectrum31f::RGB>)
+    BENCHMARK_CASE_F(IsZero_Black_RGB, Fixture<DynamicSpectrum43f::RGB>)
     {
         m_is_zero_result ^= is_zero(m_black);
     }
 
-    BENCHMARK_CASE_F(MaxValue_Black_RGB, Fixture<DynamicSpectrum31f::RGB>)
+    BENCHMARK_CASE_F(MaxValue_Black_RGB, Fixture<DynamicSpectrum43f::RGB>)
     {
         m_max_value_result += max_value(m_black);
     }
 
-    BENCHMARK_CASE_F(IsZero_White_RGB, Fixture<DynamicSpectrum31f::RGB>)
+    BENCHMARK_CASE_F(IsZero_White_RGB, Fixture<DynamicSpectrum43f::RGB>)
     {
         m_is_zero_result ^= is_zero(m_white);
     }
 
-    BENCHMARK_CASE_F(MaxValue_White_RGB, Fixture<DynamicSpectrum31f::RGB>)
+    BENCHMARK_CASE_F(MaxValue_White_RGB, Fixture<DynamicSpectrum43f::RGB>)
     {
         m_max_value_result += max_value(m_white);
     }
 
-    BENCHMARK_CASE_F(IsZero_Black_Spectral, Fixture<DynamicSpectrum31f::Spectral>)
+    BENCHMARK_CASE_F(IsZero_Black_Spectral, Fixture<DynamicSpectrum43f::Spectral>)
     {
         m_is_zero_result ^= is_zero(m_black);
     }
 
-    BENCHMARK_CASE_F(MaxValue_Black_Spectral, Fixture<DynamicSpectrum31f::Spectral>)
+    BENCHMARK_CASE_F(MaxValue_Black_Spectral, Fixture<DynamicSpectrum43f::Spectral>)
     {
         m_max_value_result += max_value(m_black);
     }
 
-    BENCHMARK_CASE_F(IsZero_White_Spectral, Fixture<DynamicSpectrum31f::Spectral>)
+    BENCHMARK_CASE_F(IsZero_White_Spectral, Fixture<DynamicSpectrum43f::Spectral>)
     {
         m_is_zero_result ^= is_zero(m_white);
     }
 
-    BENCHMARK_CASE_F(MaxValue_White_Spectral, Fixture<DynamicSpectrum31f::Spectral>)
+    BENCHMARK_CASE_F(MaxValue_White_Spectral, Fixture<DynamicSpectrum43f::Spectral>)
     {
         m_max_value_result += max_value(m_white);
     }

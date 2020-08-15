@@ -58,8 +58,12 @@ const char* color_space_name(const ColorSpace color_space)
 
 namespace
 {
-    static const float DaylightS0Amplitudes[31] =
+    static constexpr float DaylightS0Amplitudes[43] =
     {
+         61.5f,             // 360 nm
+         68.8f,             // 370 nm
+         63.4f,             // 380 nm
+         65.8f,             // 390 nm
          94.8f,             // 400 nm
         104.8f,             // 410 nm
         105.9f,             // 420 nm
@@ -90,11 +94,23 @@ namespace
          84.9f,             // 670 nm
          81.3f,             // 680 nm
          71.9f,             // 690 nm
-         74.3f              // 700 nm
+         74.3f,             // 700 nm
+         76.4f,             // 710 nm
+         63.3f,             // 720 nm
+         71.7f,             // 730 nm
+         77.0f,             // 740 nm
+         65.2f,             // 750 nm
+         47.7f,             // 760 nm
+         68.6f,             // 770 nm
+         65.0f              // 780 nm
     };
 
-    static const float DaylightS1Amplitudes[31] =
+    static constexpr float DaylightS1Amplitudes[43] =
     {
+         38.0f,             // 360 nm
+         42.4f,             // 370 nm
+         38.5f,             // 380 nm
+         35.0f,             // 390 nm
          43.4f,             // 400 nm
          46.3f,             // 410 nm
          43.9f,             // 420 nm
@@ -125,11 +141,23 @@ namespace
         -14.0f,             // 670 nm
         -13.6f,             // 680 nm
         -12.0f,             // 690 nm
-        -13.3f              // 700 nm
+        -13.3f,             // 700 nm
+        -12.9f,             // 710 nm
+        -10.6f,             // 720 nm
+        -11.6f,             // 730 nm
+        -12.2f,             // 740 nm
+        -10.2f,             // 750 nm
+         -7.8f,             // 760 nm
+        -11.2f,             // 770 nm
+        -10.4f              // 780 nm
     };
 
-    static const float DaylightS2Amplitudes[31] =
+    static constexpr float DaylightS2Amplitudes[43] =
     {
+         5.3f,              // 360 nm
+         6.1f,              // 370 nm
+         3.0f,              // 380 nm
+         1.2f,              // 390 nm
         -1.1f,              // 400 nm
         -0.5f,              // 410 nm
         -0.7f,              // 420 nm
@@ -160,13 +188,21 @@ namespace
          9.8f,              // 670 nm
         10.2f,              // 680 nm
          8.3f,              // 690 nm
-         9.6f               // 700 nm
+         9.6f,              // 700 nm
+         8.5f,              // 710 nm
+         7.0f,              // 720 nm
+         7.6f,              // 730 nm
+         8.0f,              // 740 nm
+         6.7f,              // 750 nm
+         5.2f,              // 760 nm
+         7.4f,              // 770 nm
+         6.8f               // 780 nm
     };
 }
 
-const RegularSpectrum31f DaylightS0(RegularSpectrum31f::from_array(DaylightS0Amplitudes));
-const RegularSpectrum31f DaylightS1(RegularSpectrum31f::from_array(DaylightS1Amplitudes));
-const RegularSpectrum31f DaylightS2(RegularSpectrum31f::from_array(DaylightS2Amplitudes));
+const RegularSpectrum43f DaylightS0(RegularSpectrum43f::from_array(DaylightS0Amplitudes));
+const RegularSpectrum43f DaylightS1(RegularSpectrum43f::from_array(DaylightS1Amplitudes));
+const RegularSpectrum43f DaylightS2(RegularSpectrum43f::from_array(DaylightS2Amplitudes));
 
 
 //
@@ -175,8 +211,12 @@ const RegularSpectrum31f DaylightS2(RegularSpectrum31f::from_array(DaylightS2Amp
 
 namespace
 {
-    const float IlluminantCIED65Tab[31] =
+    constexpr float IlluminantCIED65Tab[43] =
     {
+         49.638300f,        // 360 nm
+         52.089100f,        // 370 nm
+         49.975500f,        // 380 nm
+         54.648200f,        // 390 nm
          82.754900f,        // 400 nm
          91.486000f,        // 410 nm
          93.431800f,        // 420 nm
@@ -207,11 +247,23 @@ namespace
          82.277800f,        // 670 nm
          78.284200f,        // 680 nm
          69.721300f,        // 690 nm
-         71.609100f         // 700 nm
+         71.609100f,        // 700 nm
+         74.349000f,        // 710 nm
+         61.604000f,        // 720 nm
+         69.885600f,        // 730 nm
+         75.087000f,        // 740 nm
+         63.592700f,        // 750 nm
+         46.418200f,        // 760 nm
+         66.805400f,        // 770 nm
+         63.382800f         // 780 nm
     };
 
-    const float IlluminantCIEATab[31] =
+    constexpr float IlluminantCIEATab[43] =
     {
+          6.144620f,        // 360 nm
+          7.821350f,        // 370 nm
+          9.795100f,        // 380 nm
+         12.085300f,        // 390 nm
          14.708000f,        // 400 nm
          17.675300f,        // 410 nm
          20.995000f,        // 420 nm
@@ -242,15 +294,23 @@ namespace
         178.769000f,        // 670 nm
         185.429000f,        // 680 nm
         191.931000f,        // 690 nm
-        198.261000f         // 700 nm
+        198.261000f,        // 700 nm
+        204.409000f,        // 710 nm
+        210.365000f,        // 720 nm
+        216.120000f,        // 730 nm
+        221.667000f,        // 740 nm
+        227.000000f,        // 750 nm
+        232.115000f,        // 760 nm
+        237.008000f,        // 770 nm
+        241.675000f,        // 780 nm
     };
 }
 
 // Daylight illuminants.
-const RegularSpectrum31f IlluminantCIED65(RegularSpectrum31f::from_array(IlluminantCIED65Tab));
+const RegularSpectrum43f IlluminantCIED65(RegularSpectrum43f::from_array(IlluminantCIED65Tab));
 
 // Incandescent lighting illuminants.
-const RegularSpectrum31f IlluminantCIEA(RegularSpectrum31f::from_array(IlluminantCIEATab));
+const RegularSpectrum43f IlluminantCIEA(RegularSpectrum43f::from_array(IlluminantCIEATab));
 
 
 //
@@ -260,8 +320,12 @@ const RegularSpectrum31f IlluminantCIEA(RegularSpectrum31f::from_array(Illuminan
 namespace
 {
     // XYZ color matching functions -- CIE 1931 2-deg.
-    const float XYZCMFCIE19312DegTabX[31] =
+    constexpr float XYZCMFCIE19312DegTabX[43] =
     {
+        0.000129900000f,    // 360 nm
+        0.000414900000f,    // 370 nm
+        0.001368000000f,    // 380 nm
+        0.004243000000f,    // 390 nm
         0.014310000000f,    // 400 nm
         0.043510000000f,    // 410 nm
         0.134380000000f,    // 420 nm
@@ -292,10 +356,22 @@ namespace
         0.087400000000f,    // 670 nm
         0.046770000000f,    // 680 nm
         0.022700000000f,    // 690 nm
-        0.011359160000f     // 700 nm
+        0.011359160000f,    // 700 nm
+        0.005790346000f,    // 710 nm
+        0.002899327000f,    // 720 nm
+        0.001439971000f,    // 730 nm
+        0.000690078600f,    // 740 nm
+        0.000332301100f,    // 750 nm
+        0.000166150500f,    // 760 nm
+        0.000083075270f,    // 770 nm
+        0.000041509940f     // 780 nm
     };
-    const float XYZCMFCIE19312DegTabY[31] =
+    constexpr float XYZCMFCIE19312DegTabY[43] =
     {
+        0.000003917000f,    // 360 nm
+        0.000012390000f,    // 370 nm
+        0.000039000000f,    // 380 nm
+        0.000120000000f,    // 390 nm       
         0.000396000000f,    // 400 nm
         0.001210000000f,    // 410 nm
         0.004000000000f,    // 420 nm
@@ -326,10 +402,22 @@ namespace
         0.032000000000f,    // 670 nm
         0.017000000000f,    // 680 nm
         0.008210000000f,    // 690 nm
-        0.004102000000f     // 700 nm
+        0.004102000000f,    // 700 nm
+        0.002091000000f,    // 710 nm
+        0.001047000000f,    // 720 nm
+        0.000520000000f,    // 730 nm
+        0.000249200000f,    // 740 nm
+        0.000120000000f,    // 750 nm
+        0.000060000000f,    // 760 nm
+        0.000030000000f,    // 770 nm
+        0.000014990000f     // 780 nm
     };
-    const float XYZCMFCIE19312DegTabZ[31] =
+    constexpr float XYZCMFCIE19312DegTabZ[43] =
     {
+        0.000606100000f,    // 360 nm
+        0.001946000000f,    // 370 nm
+        0.006450001000f,    // 380 nm
+        0.020050010000f,    // 390 nm
         0.067850010000f,    // 400 nm
         0.207400000000f,    // 410 nm
         0.645600000000f,    // 420 nm
@@ -360,12 +448,24 @@ namespace
         0.000000000000f,    // 670 nm
         0.000000000000f,    // 680 nm
         0.000000000000f,    // 690 nm
-        0.000000000000f     // 700 nm
+        0.000000000000f,    // 700 nm
+        0.000000000000f,    // 710 nm
+        0.000000000000f,    // 720 nm
+        0.000000000000f,    // 730 nm
+        0.000000000000f,    // 740 nm
+        0.000000000000f,    // 750 nm
+        0.000000000000f,    // 760 nm
+        0.000000000000f,    // 770 nm
+        0.000000000000f     // 780 nm
     };
 
     // XYZ color matching functions -- CIE 1931 2-deg, modified by Judd (1951).
-    const float XYZCMFCIE1931Judd2DegTabX[31] =
+    constexpr float XYZCMFCIE1931Judd2DegTabX[43] =
     {
+        0.0000f,            // 360 nm
+        0.0008f,            // 370 nm
+        0.0045f,            // 380 nm
+        0.0201f,            // 390 nm
         0.0611f,            // 400 nm
         0.1267f,            // 410 nm
         0.2285f,            // 420 nm
@@ -396,10 +496,22 @@ namespace
         0.0858f,            // 670 nm
         0.0459f,            // 680 nm
         0.0222f,            // 690 nm
-        0.0113f             // 700 nm
+        0.0113f,            // 700 nm
+        0.0057f,            // 710 nm
+        0.0028f,            // 720 nm
+        0.0015f,            // 730 nm
+        0.0005f,            // 740 nm
+        0.0003f,            // 750 nm
+        0.0002f,            // 760 nm
+        0.0001f,            // 770 nm
+        0.0000f             // 780 nm
     };
-    const float XYZCMFCIE1931Judd2DegTabY[31] =
+    constexpr float XYZCMFCIE1931Judd2DegTabY[43] =
     {
+        0.0000f,            // 360 nm
+        0.0001f,            // 370 nm
+        0.0004f,            // 380 nm
+        0.0015f,            // 390 nm
         0.0045f,            // 400 nm
         0.0093f,            // 410 nm
         0.0175f,            // 420 nm
@@ -430,10 +542,22 @@ namespace
         0.0320f,            // 670 nm
         0.0170f,            // 680 nm
         0.0082f,            // 690 nm
-        0.0041f             // 700 nm
+        0.0041f,            // 700 nm
+        0.0021f,            // 710 nm
+        0.0028f,            // 720 nm
+        0.0015f,            // 730 nm
+        0.0005f,            // 740 nm
+        0.0003f,            // 750 nm
+        0.0002f,            // 760 nm
+        0.0001f,            // 770 nm
+        0.0000f             // 780 nm
     };
-    const float XYZCMFCIE1931Judd2DegTabZ[31] =
+    constexpr float XYZCMFCIE1931Judd2DegTabZ[43] =
     {
+        0.0000f,            // 360 nm
+        0.0046f,            // 370 nm
+        0.0224f,            // 380 nm
+        0.0925f,            // 390 nm
         0.2799f,            // 400 nm
         0.5835f,            // 410 nm
         1.0622f,            // 420 nm
@@ -464,12 +588,24 @@ namespace
         0.0000f,            // 670 nm
         0.0000f,            // 680 nm
         0.0000f,            // 690 nm
-        0.0000f             // 700 nm
+        0.0000f,            // 700 nm
+        0.0000f,            // 710 nm
+        0.0000f,            // 720 nm
+        0.0000f,            // 730 nm
+        0.0000f,            // 740 nm
+        0.0000f,            // 750 nm
+        0.0000f,            // 760 nm
+        0.0000f,            // 770 nm
+        0.0000f             // 780 nm
     };
 
     // XYZ color matching functions -- CIE 1931 2-deg, modified by Judd (1951) and Vos (1978).
-    const float XYZCMFCIE1931JuddVos2DegTabX[31] =
+    const float XYZCMFCIE1931JuddVos2DegTabX[43] =
     {
+        0.0f,               // 360 nm
+        0.0f,               // 370 nm
+        2.689900e-003f,     // 380 nm
+        1.078100e-002f,     // 390 nm
         3.798100e-002f,     // 400 nm
         9.994100e-002f,     // 410 nm
         2.294800e-001f,     // 420 nm
@@ -500,10 +636,22 @@ namespace
         8.575300e-002f,     // 670 nm
         4.583400e-002f,     // 680 nm
         2.218700e-002f,     // 690 nm
-        1.109800e-002f      // 700 nm
+        1.109800e-002f,     // 700 nm
+        5.653100e-003f,     // 710 nm
+        2.825300e-003f,     // 720 nm
+        1.399400e-003f,     // 730 nm
+        6.684700e-004f,     // 740 nm
+        3.207300e-004f,     // 750 nm
+        1.597300e-004f,     // 760 nm
+        7.951300e-005f,     // 770 nm
+        3.954100e-005f      // 780 nm
     };
-    const float XYZCMFCIE1931JuddVos2DegTabY[31] =
+    constexpr float XYZCMFCIE1931JuddVos2DegTabY[43] =
     {
+        0.0f,               // 360 nm
+        0.0f,               // 370 nm
+        2.000000e-004f,     // 380 nm
+        8.000000e-004f,     // 390 nm
         2.800000e-003f,     // 400 nm
         7.400000e-003f,     // 410 nm
         1.750000e-002f,     // 420 nm
@@ -534,10 +682,22 @@ namespace
         3.200000e-002f,     // 670 nm
         1.700000e-002f,     // 680 nm
         8.210000e-003f,     // 690 nm
-        4.102000e-003f      // 700 nm
+        4.102000e-003f,     // 700 nm
+        2.091000e-003f,     // 710 nm
+        1.047000e-003f,     // 720 nm
+        5.200000e-004f,     // 730 nm
+        2.492000e-004f,     // 740 nm
+        1.200000e-004f,     // 750 nm
+        6.000000e-004f,     // 760 nm
+        3.000000e-005f,     // 770 nm
+        1.498900e-005f      // 780 nm
     };
-    const float XYZCMFCIE1931JuddVos2DegTabZ[31] =
+    constexpr float XYZCMFCIE1931JuddVos2DegTabZ[43] =
     {
+        0.0f,               // 360 nm
+        0.0f,               // 370 nm
+        1.226000e-002f,     // 380 nm
+        4.925000e-002f,     // 390 nm
         1.740900e-001f,     // 400 nm
         4.605300e-001f,     // 410 nm
         1.065800e+000f,     // 420 nm
@@ -568,12 +728,24 @@ namespace
         5.600600e-006f,     // 670 nm
         2.791200e-006f,     // 680 nm
         1.313500e-006f,     // 690 nm
-        6.476700e-007f      // 700 nm
+        6.476700e-007f,     // 700 nm
+        3.330400e-007f,     // 710 nm
+        1.702600e-007f,     // 720 nm
+        8.710700e-008f,     // 730 nm
+        4.316200e-008f,     // 740 nm
+        2.155400e-008f,     // 750 nm
+        1.120400e-008f,     // 760 nm
+        5.834000e-009f,     // 770 nm
+        3.038300e-009f      // 780 nm
     };
 
     // XYZ color matching functions -- CIE 1964 10-deg.
-    const float XYZCMFCIE196410DegTabX[31] =
+    constexpr float XYZCMFCIE196410DegTabX[43] =
     {
+        0.000000122200f,    // 360 nm
+        0.000005958600f,    // 370 nm
+        0.000159952000f,    // 380 nm
+        0.002361600000f,    // 390 nm
         0.019109700000f,    // 400 nm
         0.084736000000f,    // 410 nm
         0.204492000000f,    // 420 nm
@@ -604,10 +776,22 @@ namespace
         0.081260600000f,    // 670 nm
         0.040850800000f,    // 680 nm
         0.019941300000f,    // 690 nm
-        0.009576880000f     // 700 nm
+        0.009576880000f,    // 700 nm
+        0.004552630000f,    // 710 nm
+        0.002174960000f,    // 720 nm
+        0.001044760000f,    // 730 nm
+        0.000508258000f,    // 740 nm
+        0.000250969000f,    // 750 nm
+        0.000126390000f,    // 760 nm
+        0.000064525800f,    // 770 nm
+        0.000033411700f     // 780 nm
     };
-    const float XYZCMFCIE196410DegTabY[31] =
+    constexpr float XYZCMFCIE196410DegTabY[43] =
     {
+        0.000000013398f,    // 360 nm
+        0.000000651100f,    // 370 nm
+        0.000017364000f,    // 380 nm
+        0.000253400000f,    // 390 nm
         0.002004400000f,    // 400 nm
         0.008756000000f,    // 410 nm
         0.021391000000f,    // 420 nm
@@ -638,10 +822,22 @@ namespace
         0.031800400000f,    // 670 nm
         0.015905100000f,    // 680 nm
         0.007748800000f,    // 690 nm
-        0.003717740000f     // 700 nm
+        0.003717740000f,    // 700 nm
+        0.001768470000f,    // 710 nm
+        0.000846190000f,    // 720 nm
+        0.000407410000f,    // 730 nm
+        0.000198730000f,    // 740 nm
+        0.000098428000f,    // 750 nm
+        0.000049737000f,    // 760 nm
+        0.000025486000f,    // 770 nm
+        0.000013249000f     // 780 nm
     };
-    const float XYZCMFCIE196410DegTabZ[31] =
+    constexpr float XYZCMFCIE196410DegTabZ[43] =
     {
+        0.000000535027f,    // 360 nm
+        0.000026143700f,    // 370 nm
+        0.000704776000f,    // 380 nm
+        0.010482200000f,    // 390 nm
         0.086010900000f,    // 400 nm
         0.389366000000f,    // 410 nm
         0.972542000000f,    // 420 nm
@@ -672,12 +868,24 @@ namespace
         0.000000000000f,    // 670 nm
         0.000000000000f,    // 680 nm
         0.000000000000f,    // 690 nm
-        0.000000000000f     // 700 nm
+        0.000000000000f,    // 700 nm
+        0.000000000000f,    // 710 nm
+        0.000000000000f,    // 720 nm
+        0.000000000000f,    // 730 nm
+        0.000000000000f,    // 740 nm
+        0.000000000000f,    // 750 nm
+        0.000000000000f,    // 760 nm
+        0.000000000000f,    // 770 nm
+        0.000000000000f     // 780 nm
     };
 
     // RGB color matching functions -- Stiles and Burch (1955) 2-deg.
-    const float RGBCMFStilesBurch19552DegTabX[31] =
+    constexpr float RGBCMFStilesBurch19552DegTabX[43] =
     {
+         0.0f,              // 360 nm
+         0.0f,              // 370 nm
+         0.0f,              // 380 nm
+         1.83970e-003f,     // 390 nm
          9.62640e-003f,     // 400 nm
          3.08030e-002f,     // 410 nm
          5.16620e-002f,     // 420 nm
@@ -708,10 +916,22 @@ namespace
          2.34550e-001f,     // 670 nm
          1.20860e-001f,     // 680 nm
          6.02600e-002f,     // 690 nm
-         2.81140e-002f      // 700 nm
+         2.81140e-002f,     // 700 nm
+         1.13305e-002f,     // 710 nm
+         6.51770e-003f,     // 720 nm
+         3.17420e-003f,     // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
-    const float RGBCMFStilesBurch19552DegTabY[31] =
+    constexpr float RGBCMFStilesBurch19552DegTabY[43] =
     {
+         0.0f,              // 360 nm
+         0.0f,              // 370 nm
+         0.0f,              // 380 nm
+         1.83970e-003f,     // 390 nm
         -2.16890e-003f,     // 400 nm
         -7.20480e-003f,     // 410 nm
         -1.66510e-002f,     // 420 nm
@@ -742,10 +962,22 @@ namespace
         -1.87000e-003f,     // 670 nm
         -1.07550e-003f,     // 680 nm
         -5.67650e-004f,     // 690 nm
-        -2.62310e-004f      // 700 nm
+        -2.62310e-004f,     // 700 nm
+        -1.21400e-004f,     // 710 nm
+        -5.76770e-005f,     // 720 nm
+        -2.65110e-005f,     // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
-    const float RGBCMFStilesBurch19552DegTabZ[31] =
+    constexpr float RGBCMFStilesBurch19552DegTabZ[43] =
     {
+         0.0f,              // 360 nm
+         0.0f,              // 370 nm
+         0.0f,              // 380 nm
+         1.21520e-002f,     // 390 nm
          6.23710e-002f,     // 400 nm
          2.27500e-001f,     // 410 nm
          5.23960e-001f,     // 420 nm
@@ -776,12 +1008,24 @@ namespace
          1.63610e-004f,     // 670 nm
          5.10330e-005f,     // 680 nm
          3.12110e-005f,     // 690 nm
-         1.65210e-005f      // 700 nm
+         1.65210e-005f,     // 700 nm
+         8.69650e-006f,     // 710 nm
+         6.10570e-006f,     // 720 nm
+         4.12510e-006f,     // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
 
     // RGB color matching functions -- Stiles and Burch (1959) 10-deg.
-    const float RGBCMFStilesBurch195910DegTabX[31] =
+    constexpr float RGBCMFStilesBurch195910DegTabX[43] =
     {
+         0.0f,              // 360 nm
+         0.0f,              // 370 nm
+         0.0f,              // 380 nm
+         1.5000E-03f,       // 390 nm
          8.9000E-03f,       // 400 nm
          3.5000E-02f,       // 410 nm
          7.0200E-02f,       // 420 nm
@@ -812,10 +1056,22 @@ namespace
          2.3940E-01f,       // 670 nm
          1.2210E-01f,       // 680 nm
          5.8600E-02f,       // 690 nm
-         2.8400E-02f        // 700 nm
+         2.8400E-02f,       // 700 nm
+         1.3500E-02f,       // 710 nm
+         6.3800E-03f,       // 720 nm
+         3.0700E-03f,       // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
-    const float RGBCMFStilesBurch195910DegTabY[31] =
+    constexpr float RGBCMFStilesBurch195910DegTabY[43] =
     {
+         0.0f,              // 360 nm
+         0.0f,              // 370 nm
+         0.0f,              // 380 nm
+        -4.0000E-04f,       // 390 nm
         -2.5000E-03f,       // 400 nm
         -1.1900E-02f,       // 410 nm
         -2.8900E-02f,       // 420 nm
@@ -846,10 +1102,22 @@ namespace
         -1.6420E-03f,       // 670 nm
         -9.4700E-04f,       // 680 nm
         -4.7800E-04f,       // 690 nm
-        -2.3500E-04f        // 700 nm
+        -2.3500E-04f,       // 700 nm
+        -1.1110E-04f,       // 710 nm
+        -5.0800E-05f,       // 720 nm
+        -2.3400E-05f,       // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
-    const float RGBCMFStilesBurch195910DegTabZ[31] =
+    constexpr float RGBCMFStilesBurch195910DegTabZ[43] =
     {
+         0,                 // 360 nm
+         0,                 // 370 nm
+         0,                 // 380 nm
+         0,                 // 390 nm
          4.0000E-02f,       // 400 nm
          1.8020E-01f,       // 410 nm
          4.6700E-01f,       // 420 nm
@@ -881,47 +1149,55 @@ namespace
          1.0300E-05f,       // 680 nm
          5.2200E-06f,       // 690 nm
          2.5600E-06f        // 700 nm
+        -1.2000E-06f,       // 710 nm
+        -5.5500E-07f,       // 720 nm
+        -2.5400E-07f,       // 730 nm
+         0.0f,              // 740 nm
+         0.0f,              // 750 nm
+         0.0f,              // 760 nm
+         0.0f,              // 770 nm
+         0.0f               // 780 nm
     };
 }
 
 // XYZ color matching functions.
-const RegularSpectrum31f XYZCMFCIE19312Deg[3] =
+const RegularSpectrum43f XYZCMFCIE19312Deg[3] =
 {
-    RegularSpectrum31f::from_array(XYZCMFCIE19312DegTabX),
-    RegularSpectrum31f::from_array(XYZCMFCIE19312DegTabY),
-    RegularSpectrum31f::from_array(XYZCMFCIE19312DegTabZ)
+    RegularSpectrum43f::from_array(XYZCMFCIE19312DegTabX),
+    RegularSpectrum43f::from_array(XYZCMFCIE19312DegTabY),
+    RegularSpectrum43f::from_array(XYZCMFCIE19312DegTabZ)
 };
-const RegularSpectrum31f XYZCMFCIE1931Judd2Deg[3] =
+const RegularSpectrum43f XYZCMFCIE1931Judd2Deg[3] =
 {
-    RegularSpectrum31f::from_array(XYZCMFCIE1931Judd2DegTabX),
-    RegularSpectrum31f::from_array(XYZCMFCIE1931Judd2DegTabY),
-    RegularSpectrum31f::from_array(XYZCMFCIE1931Judd2DegTabZ)
+    RegularSpectrum43f::from_array(XYZCMFCIE1931Judd2DegTabX),
+    RegularSpectrum43f::from_array(XYZCMFCIE1931Judd2DegTabY),
+    RegularSpectrum43f::from_array(XYZCMFCIE1931Judd2DegTabZ)
 };
-const RegularSpectrum31f XYZCMFCIE1931JuddVos2Deg[3] =
+const RegularSpectrum43f XYZCMFCIE1931JuddVos2Deg[3] =
 {
-    RegularSpectrum31f::from_array(XYZCMFCIE1931JuddVos2DegTabX),
-    RegularSpectrum31f::from_array(XYZCMFCIE1931JuddVos2DegTabY),
-    RegularSpectrum31f::from_array(XYZCMFCIE1931JuddVos2DegTabZ)
+    RegularSpectrum43f::from_array(XYZCMFCIE1931JuddVos2DegTabX),
+    RegularSpectrum43f::from_array(XYZCMFCIE1931JuddVos2DegTabY),
+    RegularSpectrum43f::from_array(XYZCMFCIE1931JuddVos2DegTabZ)
 };
-const RegularSpectrum31f XYZCMFCIE196410Deg[3] =
+const RegularSpectrum43f XYZCMFCIE196410Deg[3] =
 {
-    RegularSpectrum31f::from_array(XYZCMFCIE196410DegTabX),
-    RegularSpectrum31f::from_array(XYZCMFCIE196410DegTabY),
-    RegularSpectrum31f::from_array(XYZCMFCIE196410DegTabZ)
+    RegularSpectrum43f::from_array(XYZCMFCIE196410DegTabX),
+    RegularSpectrum43f::from_array(XYZCMFCIE196410DegTabY),
+    RegularSpectrum43f::from_array(XYZCMFCIE196410DegTabZ)
 };
 
 // RGB color matching functions.
-const RegularSpectrum31f RGBCMFStilesBurch19552Deg[3] =
+const RegularSpectrum43f RGBCMFStilesBurch19552Deg[3] =
 {
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch19552DegTabX),
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch19552DegTabY),
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch19552DegTabZ)
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch19552DegTabX),
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch19552DegTabY),
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch19552DegTabZ)
 };
-const RegularSpectrum31f RGBCMFStilesBurch195910Deg[3] =
+const RegularSpectrum43f RGBCMFStilesBurch195910Deg[3] =
 {
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch195910DegTabX),
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch195910DegTabY),
-    RegularSpectrum31f::from_array(RGBCMFStilesBurch195910DegTabZ)
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch195910DegTabX),
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch195910DegTabY),
+    RegularSpectrum43f::from_array(RGBCMFStilesBurch195910DegTabZ)
 };
 
 
@@ -934,8 +1210,12 @@ const RegularSpectrum31f RGBCMFStilesBurch195910Deg[3] =
 
 namespace
 {
-    const float RGBToSpectrumWhiteReflectanceTab[31] =
+    const float RGBToSpectrumWhiteReflectanceTab[43] =
     {
+         1.061896f,         // 360 nm
+         1.061896f,         // 370 nm
+         1.061896f,         // 380 nm
+         1.061525f,         // 390 nm
          1.061387f,         // 400 nm
          1.062091f,         // 410 nm
          1.062237f,         // 420 nm
@@ -966,11 +1246,23 @@ namespace
          1.060339f,         // 670 nm
          1.059459f,         // 680 nm
          1.060084f,         // 690 nm
-         1.060248f          // 700 nm
+         1.060248f,         // 700 nm
+         1.060149f,         // 710 nm
+         1.060657f,         // 720 nm
+         1.060657f,         // 730 nm
+         1.060657f,         // 740 nm
+         1.060657f,         // 750 nm
+         1.060657f,         // 760 nm
+         1.060657f,         // 770 nm
+         1.060657f          // 780 nm
     };
 
-    const float RGBToSpectrumCyanReflectanceTab[31] =
+    const float RGBToSpectrumCyanReflectanceTab[43] =
     {
+         1.041463f,         // 360 nm
+         1.041463f,         // 370 nm
+         1.041463f,         // 380 nm
+         1.034052f,         // 390 nm
          1.013784f,         // 400 nm
          1.031559f,         // 410 nm
          1.014911f,         // 420 nm
@@ -1001,11 +1293,23 @@ namespace
          0.004759f,         // 670 nm
          0.001682f,         // 680 nm
          0.015969f,         // 690 nm
-         0.004066f          // 700 nm
+         0.004066f,         // 700 nm
+         0.006911f,         // 710 nm
+         0.025259f,         // 720 nm
+         0.025259f,         // 730 nm
+         0.025259f,         // 740 nm
+         0.025259f,         // 750 nm
+         0.025259f,         // 760 nm
+         0.025259f,         // 770 nm
+         0.025259f,         // 780 nm
     };
 
-    const float RGBToSpectrumMagentaReflectanceTab[31] =
+    const float RGBToSpectrumMagentaReflectanceTab[43] =
     {
+         0.994221f,         // 360 nm
+         0.994221f,         // 370 nm
+         0.994221f,         // 380 nm
+         0.990348f,         // 390 nm
          0.982980f,         // 400 nm
          0.991489f,         // 410 nm
          1.013132f,         // 420 nm
@@ -1036,11 +1340,23 @@ namespace
          0.952359f,         // 670 nm
          0.968253f,         // 680 nm
          0.969608f,         // 690 nm
-         0.859295f          // 700 nm
+         0.859295f,         // 700 nm
+         0.890345f,         // 710 nm
+         0.848665f,         // 720 nm
+         0.848665f,         // 730 nm
+         0.848665f,         // 740 nm
+         0.848665f,         // 750 nm
+         0.848665f,         // 760 nm
+         0.848665f,         // 770 nm
+         0.848665f          // 780 nm
     };
 
-    const float RGBToSpectrumYellowReflectanceTab[31] =
+    const float RGBToSpectrumYellowReflectanceTab[43] =
     {
+         0.005574f,         // 360 nm
+         0.005574f,         // 370 nm
+         0.005574f,         // 380 nm
+        -0.004247f,         // 390 nm
         -0.005256f,         // 400 nm
         -0.006240f,         // 410 nm
         -0.006453f,         // 420 nm
@@ -1071,11 +1387,23 @@ namespace
          1.051017f,         // 670 nm
          1.049825f,         // 680 nm
          1.048018f,         // 690 nm
-         1.048736f          // 700 nm
+         1.048736f,         // 700 nm
+         1.043161f,         // 710 nm
+         1.039228f,         // 720 nm
+         1.039228f,         // 730 nm
+         1.039228f,         // 740 nm
+         1.039228f,         // 750 nm
+         1.039228f,         // 760 nm
+         1.039228f,         // 770 nm
+         1.039228f          // 780 nm
     };
 
-    const float RGBToSpectrumRedReflectanceTab[31] =
+    const float RGBToSpectrumRedReflectanceTab[43] =
     {
+         0.165756f,         // 360 nm
+         0.165756f,         // 370 nm
+         0.165756f,         // 380 nm
+         0.120697f,         // 390 nm
          0.123370f,         // 400 nm
          0.118612f,         // 410 nm
          0.093120f,         // 420 nm
@@ -1106,11 +1434,23 @@ namespace
          0.994352f,         // 670 nm
          0.999046f,         // 680 nm
          0.975771f,         // 690 nm
-         0.978881f          // 700 nm
+         0.978881f,         // 700 nm
+         0.935798f,         // 710 nm
+         0.987139f,         // 720 nm
+         0.987139f,         // 730 nm
+         0.987139f,         // 740 nm
+         0.987139f,         // 750 nm
+         0.987139f,         // 760 nm
+         0.987139f,         // 770 nm
+         0.987139f          // 780 nm
     };
 
-    const float RGBToSpectrumGreenReflectanceTab[31] =
+    const float RGBToSpectrumGreenReflectanceTab[43] =
     {
+         0.002649f,         // 360 nm
+         0.002649f,         // 370 nm
+         0.002649f,         // 380 nm
+        -0.004346f,         // 390 nm
         -0.011856f,         // 400 nm
         -0.010107f,         // 410 nm
         -0.011761f,         // 420 nm
@@ -1141,11 +1481,23 @@ namespace
         -0.008493f,         // 670 nm
         -0.008510f,         // 680 nm
         -0.006252f,         // 690 nm
-         0.001272f          // 700 nm
+         0.001272f,         // 700 nm
+         0.005206f,         // 710 nm
+        -0.002775f,         // 720 nm
+        -0.002775f,         // 730 nm
+        -0.002775f,         // 740 nm
+        -0.002775f,         // 750 nm
+        -0.002775f,         // 760 nm
+        -0.002775f,         // 770 nm
+        -0.002775f          // 780 nm
     };
 
-    const float RGBToSpectrumBlueReflectanceTab[31] =
+    const float RGBToSpectrumBlueReflectanceTab[43] =
     {
+         0.992098f,         // 360 nm
+         0.992098f,         // 370 nm
+         0.992098f,         // 380 nm
+         0.988693f,         // 390 nm
          0.994496f,         // 400 nm
          0.995734f,         // 410 nm
          0.992298f,         // 420 nm
@@ -1176,11 +1528,23 @@ namespace
          0.046082f,         // 670 nm
          0.036494f,         // 680 nm
          0.028174f,         // 690 nm
-         0.018875f          // 700 nm
+         0.018875f,         // 700 nm
+         0.006292f,         // 710 nm
+         0.004173f,         // 720 nm
+         0.004173f,         // 730 nm
+         0.004173f,         // 740 nm
+         0.004173f,         // 750 nm
+         0.004173f,         // 760 nm
+         0.004173f,         // 770 nm
+         0.004173f          // 780 nm
     };
 
-    const float RGBToSpectrumWhiteIlluminanceTab[31] =
+    const float RGBToSpectrumWhiteIlluminanceTab[43] =
     {
+         1.156523f,         // 360 nm
+         1.156523f,         // 370 nm
+         1.156523f,         // 380 nm
+         1.156716f,         // 390 nm
          1.156698f,         // 400 nm
          1.155758f,         // 410 nm
          1.155931f,         // 420 nm
@@ -1211,11 +1575,23 @@ namespace
          0.881022f,         // 670 nm
          0.878510f,         // 680 nm
          0.876875f,         // 690 nm
-         0.880276f          // 700 nm
+         0.880276f,         // 700 nm
+         0.880804f,         // 710 nm
+         0.883047f,         // 720 nm
+         0.883047f,         // 730 nm
+         0.883047f,         // 740 nm
+         0.883047f,         // 750 nm
+         0.883047f,         // 760 nm
+         0.883047f,         // 770 nm
+         0.883047f          // 780 nm
     };
 
-    const float RGBToSpectrumCyanIlluminanceTab[31] =
+    const float RGBToSpectrumCyanIlluminanceTab[43] =
     {
+         1.133448f,         // 360 nm
+         1.133448f,         // 370 nm
+         1.133448f,         // 380 nm
+         1.126732f,         // 390 nm
          1.133496f,         // 400 nm
          1.135722f,         // 410 nm
          1.135677f,         // 420 nm
@@ -1246,11 +1622,23 @@ namespace
         -0.005750f,         // 670 nm
         -0.008846f,         // 680 nm
         -0.008741f,         // 690 nm
-        -0.005066f          // 700 nm
+        -0.005066f,         // 700 nm
+        -0.004919f,         // 710 nm
+        -0.012541f,         // 720 nm
+        -0.012541f,         // 730 nm
+        -0.012541f,         // 740 nm
+        -0.012541f,         // 750 nm
+        -0.012541f,         // 760 nm
+        -0.012541f,         // 770 nm
+        -0.012541f          // 780 nm
     };
 
-    const float RGBToSpectrumMagentaIlluminanceTab[31] =
+    const float RGBToSpectrumMagentaIlluminanceTab[43] =
     {
+         1.037189f,         // 360 nm
+         1.037189f,         // 370 nm
+         1.037189f,         // 380 nm
+         1.056983f,         // 390 nm
          1.074704f,         // 400 nm
          1.076600f,         // 410 nm
          1.078852f,         // 420 nm
@@ -1281,11 +1669,23 @@ namespace
          1.054028f,         // 670 nm
          1.048301f,         // 680 nm
          0.995864f,         // 690 nm
-         1.075629f          // 700 nm
+         1.075629f,         // 700 nm
+         1.060663f,         // 710 nm
+         1.015088f,         // 720 nm
+         1.015088f,         // 730 nm
+         1.015088f,         // 740 nm
+         1.015088f,         // 750 nm
+         1.015088f,         // 760 nm
+         1.015088f,         // 770 nm
+         1.015088f          // 780 nm
     };
 
-    const float RGBToSpectrumYellowIlluminanceTab[31] =
+    const float RGBToSpectrumYellowIlluminanceTab[43] =
     {
+         0.002776f,         // 360 nm
+         0.002776f,         // 370 nm
+         0.002776f,         // 380 nm
+         0.004057f,         // 390 nm
          0.000371f,         // 400 nm
          0.000189f,         // 410 nm
         -0.000055f,         // 420 nm
@@ -1316,11 +1716,23 @@ namespace
          0.597532f,         // 670 nm
          0.595525f,         // 680 nm
          0.587864f,         // 690 nm
-         0.562571f          // 700 nm
+         0.562571f,         // 700 nm
+         0.561563f,         // 710 nm
+         0.582286f,         // 720 nm
+         0.582286f,         // 730 nm
+         0.582286f,         // 740 nm
+         0.582286f,         // 750 nm
+         0.582286f,         // 760 nm
+         0.582286f,         // 770 nm
+         0.582286f          // 780 nm
     };
 
-    const float RGBToSpectrumRedIlluminanceTab[31] =
+    const float RGBToSpectrumRedIlluminanceTab[43] =
     {
+         0.054711f,         // 360 nm
+         0.054711f,         // 370 nm
+         0.054711f,         // 380 nm
+         0.055374f,         // 390 nm
          0.060372f,         // 400 nm
          0.058076f,         // 410 nm
          0.049804f,         // 420 nm
@@ -1351,11 +1763,23 @@ namespace
          0.990260f,         // 670 nm
          0.988620f,         // 680 nm
          0.976626f,         // 690 nm
-         0.991906f          // 700 nm
+         0.991906f,         // 700 nm
+         0.989002f,         // 710 nm
+         0.997139f,         // 720 nm
+         0.997139f,         // 730 nm
+         0.997139f,         // 740 nm
+         0.997139f,         // 750 nm
+         0.997139f,         // 760 nm
+         0.997139f,         // 770 nm
+         0.997139f,         // 780 nm
     };
 
-    const float RGBToSpectrumGreenIlluminanceTab[31] =
+    const float RGBToSpectrumGreenIlluminanceTab[43] =
     {
+         0.025168f,         // 360 nm
+         0.025168f,         // 370 nm
+         0.025168f,         // 380 nm
+         0.039911f,         // 390 nm
          0.010635f,         // 400 nm
          0.006551f,         // 410 nm
          0.002472f,         // 420 nm
@@ -1386,11 +1810,23 @@ namespace
          0.001011f,         // 670 nm
         -0.002722f,         // 680 nm
         -0.004106f,         // 690 nm
-         0.015684f          // 700 nm
+         0.015684f,         // 700 nm
+         0.042476f,         // 710 nm
+         0.021253f,         // 720 nm
+         0.021253f,         // 730 nm
+         0.021253f,         // 740 nm
+         0.021253f,         // 750 nm
+         0.021253f,         // 760 nm
+         0.021253f,         // 770 nm
+         0.021253f          // 780 nm
     };
 
-    const float RGBToSpectrumBlueIlluminanceTab[31] =
+    const float RGBToSpectrumBlueIlluminanceTab[43] =
     {
+         1.057049f,         // 360 nm
+         1.057049f,         // 370 nm
+         1.057049f,         // 380 nm
+         1.053968f,         // 390 nm
          1.054973f,         // 400 nm
          1.053157f,         // 410 nm
          1.056342f,         // 420 nm
@@ -1421,35 +1857,43 @@ namespace
          0.152744f,         // 670 nm
          0.153725f,         // 680 nm
          0.168626f,         // 690 nm
-         0.168186f          // 700 nm
+         0.168186f,         // 700 nm
+         0.158949f,         // 710 nm
+         0.190691f,         // 720 nm
+         0.190691f,         // 730 nm
+         0.190691f,         // 740 nm
+         0.190691f,         // 750 nm
+         0.190691f,         // 760 nm
+         0.190691f,         // 770 nm
+         0.190691f,         // 780 nm
     };
 }
 
 // Basis spectra for reflectance conversions.
-const RegularSpectrum31f RGBToSpectrumWhiteReflectance(RegularSpectrum31f::from_array(RGBToSpectrumWhiteReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumCyanReflectance(RegularSpectrum31f::from_array(RGBToSpectrumCyanReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumMagentaReflectance(RegularSpectrum31f::from_array(RGBToSpectrumMagentaReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumYellowReflectance(RegularSpectrum31f::from_array(RGBToSpectrumYellowReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumRedReflectance(RegularSpectrum31f::from_array(RGBToSpectrumRedReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumGreenReflectance(RegularSpectrum31f::from_array(RGBToSpectrumGreenReflectanceTab));
-const RegularSpectrum31f RGBToSpectrumBlueReflectance(RegularSpectrum31f::from_array(RGBToSpectrumBlueReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumWhiteReflectance(RegularSpectrum43f::from_array(RGBToSpectrumWhiteReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumCyanReflectance(RegularSpectrum43f::from_array(RGBToSpectrumCyanReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumMagentaReflectance(RegularSpectrum43f::from_array(RGBToSpectrumMagentaReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumYellowReflectance(RegularSpectrum43f::from_array(RGBToSpectrumYellowReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumRedReflectance(RegularSpectrum43f::from_array(RGBToSpectrumRedReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumGreenReflectance(RegularSpectrum43f::from_array(RGBToSpectrumGreenReflectanceTab));
+const RegularSpectrum43f RGBToSpectrumBlueReflectance(RegularSpectrum43f::from_array(RGBToSpectrumBlueReflectanceTab));
 
 // Basis spectra for illuminance conversions.
-const RegularSpectrum31f RGBToSpectrumWhiteIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumWhiteIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumCyanIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumCyanIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumMagentaIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumMagentaIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumYellowIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumYellowIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumRedIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumRedIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumGreenIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumGreenIlluminanceTab));
-const RegularSpectrum31f RGBToSpectrumBlueIlluminance(RegularSpectrum31f::from_array(RGBToSpectrumBlueIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumWhiteIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumWhiteIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumCyanIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumCyanIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumMagentaIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumMagentaIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumYellowIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumYellowIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumRedIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumRedIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumGreenIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumGreenIlluminanceTab));
+const RegularSpectrum43f RGBToSpectrumBlueIlluminance(RegularSpectrum43f::from_array(RGBToSpectrumBlueIlluminanceTab));
 
 namespace
 {
     // Get color matching functions normalizer
-    float get_cmf_normalizer(const Color4f cmf[32])
+    float get_cmf_normalizer(const Color4f cmf[44])
     {
         float n = 0.0f;
-        for (std::size_t w = 0; w < 31; ++w)
+        for (std::size_t w = 0; w < 43; ++w)
             n += cmf[w][1];
         return 1.0f / n;
     }
@@ -1465,11 +1909,11 @@ LightingConditions::LightingConditions()
 }
 
 LightingConditions::LightingConditions(
-    const RegularSpectrum31f&   illuminant,
-    const RegularSpectrum31f    cmf[3])
+    const RegularSpectrum43f&   illuminant,
+    const RegularSpectrum43f    cmf[3])
 {
     // Precompute convolution of color matching functions and illuminant.
-    for (std::size_t w = 0; w < 31; ++w)
+    for (std::size_t w = 0; w < 43; ++w)
     {
         m_cmf_reflectance[w][0] = m_cmf_illuminance[w][0] = cmf[0][w];
         m_cmf_reflectance[w][1] = m_cmf_illuminance[w][1] = cmf[1][w];
@@ -1478,14 +1922,14 @@ LightingConditions::LightingConditions(
         m_cmf_reflectance[w] *= illuminant[w];
     }
 
-    m_cmf_illuminance[31].set(0.0f);
-    m_cmf_reflectance[31].set(0.0f);
+    m_cmf_illuminance[43].set(0.0f);
+    m_cmf_reflectance[43].set(0.0f);
 
     const float reflectance_normalizer = get_cmf_normalizer(m_cmf_reflectance);
     const float illuminance_normalizer = get_cmf_normalizer(m_cmf_illuminance);
 
     // Normalize color matching functions.
-    for (std::size_t w = 0; w < 31; ++w)
+    for (std::size_t w = 0; w < 43; ++w)
     {
         m_cmf_reflectance[w] *= reflectance_normalizer;
         m_cmf_illuminance[w] *= illuminance_normalizer;
@@ -1504,9 +1948,9 @@ void spectral_reflectance_to_ciexyz_standard(
     const LightingConditions lighting_conditions(IlluminantCIED65, XYZCMFCIE19312Deg);
 
     const Color3f c =
-        spectral_reflectance_to_ciexyz<float, RegularSpectrum31f>(
+        spectral_reflectance_to_ciexyz<float, RegularSpectrum43f>(
             lighting_conditions,
-            RegularSpectrum31f::from_array(spectrum));
+            RegularSpectrum43f::from_array(spectrum));
 
     ciexyz[0] = c[0];
     ciexyz[1] = c[1];

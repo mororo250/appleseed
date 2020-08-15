@@ -52,30 +52,31 @@ TEST_SUITE(Foundation_Image_ColorSpace)
         const double    input_spectrum[],
         const char*     variable_name)
     {
-        static const double output_wavelength[31] =
+        static const double output_wavelength[43] =
         {
-            400.0, 410.0, 420.0, 430.0, 440.0, 450.0, 460.0, 470.0, 480.0, 490.0,
-            500.0, 510.0, 520.0, 530.0, 540.0, 550.0, 560.0, 570.0, 580.0, 590.0,
-            600.0, 610.0, 620.0, 630.0, 640.0, 650.0, 660.0, 670.0, 680.0, 690.0,
-            700.0
+            360.0, 370.0, 380.0, 390.0, 400.0, 410.0, 420.0, 430.0, 440.0, 450.0,
+            460.0, 470.0, 480.0, 490.0, 500.0, 510.0, 520.0, 530.0, 540.0, 550.0,
+            560.0, 570.0, 580.0, 590.0, 600.0, 610.0, 620.0, 630.0, 640.0, 650.0,
+            660.0, 670.0, 680.0, 690.0, 700.0, 710.0, 720.0, 730.0, 740.0, 750.0,
+            760.0, 770.0, 780.0
         };
 
-        RegularSpectrum<double, 31> output_spectrum;
+        RegularSpectrum<double, 43> output_spectrum;
         spectrum_to_spectrum(
             input_count, input_wavelength, input_spectrum,
-            31, output_wavelength, &output_spectrum[0]);
+            43, output_wavelength, &output_spectrum[0]);
 
         fprintf(file, "const float %s[31] =\n", variable_name);
         fprintf(file, "{\n");
 
-        for (int i = 0; i < 31; ++i)
+        for (int i = 0; i < 43; ++i)
         {
-            const int wavelength = 400 + i * 10;
+            const int wavelength = 360 + i * 10;
             const double amplitude = output_spectrum[i];
             fprintf(file, "    %s%ff%s         // %d nm\n",
                 amplitude >= 0.0f ? " " : "",
                 amplitude,
-                i < 30 ? "," : " ",
+                i < 43 ? "," : " ",
                 wavelength);
         }
 
@@ -114,7 +115,8 @@ TEST_SUITE(Foundation_Image_ColorSpace)
             1.0625538581025402e+00, 1.0625326910104864e+00, 1.0623922312225325e+00,
             1.0623650980354129e+00, 1.0625256476715284e+00, 1.0612277619533155e+00,
             1.0594262608698046e+00, 1.0599810758292072e+00, 1.0602547314449409e+00,
-            1.0601263046243634e+00, 1.0606565756823634e+00f};
+            1.0601263046243634e+00, 1.0606565756823634e+00f
+        };
 
         static const double RGBRefl2SpectCyan[SampleCount] =
         {
@@ -465,7 +467,7 @@ TEST_SUITE(Foundation_Image_ColorSpace)
             1.0e-5f);
     }
 
-    static RegularSpectrum31f get_white_spectrum()
+    static RegularSpectrum43f get_white_spectrum()
     {
         // The white color from the Cornell Box scene.
         static const float Values[31] =
@@ -475,12 +477,12 @@ TEST_SUITE(Foundation_Image_ColorSpace)
             0.733000f, 0.724813f, 0.764000f, 0.733563f, 0.740000f, 0.751063f, 0.744000f, 0.739438f,
             0.712000f, 0.731000f, 0.707000f, 0.740500f, 0.751000f, 0.725438f, 0.737000f
         };
-        return RegularSpectrum31f::from_array(Values);
+        return RegularSpectrum43f::from_array(Values);
     }
 
     TEST_CASE(TestSpectralReflectanceToCIEXYZConversion)
     {
-        const RegularSpectrum31f spectrum = get_white_spectrum();
+        const RegularSpectrum43f spectrum = get_white_spectrum();
         const LightingConditions lighting_conditions(IlluminantCIED65, XYZCMFCIE19312Deg);
         const Color3f ciexyz = spectral_reflectance_to_ciexyz<float>(lighting_conditions, spectrum);
 
@@ -494,7 +496,7 @@ TEST_SUITE(Foundation_Image_ColorSpace)
     {
         const Color3f ciexyz(0.699385f, 0.738633f, 0.790319f);
 
-        RegularSpectrum31f spectrum;
+        RegularSpectrum43f spectrum;
         ciexyz_reflectance_to_spectrum(ciexyz, spectrum);
 
         const float ExpectedSpectrumValues[31] =
@@ -506,21 +508,22 @@ TEST_SUITE(Foundation_Image_ColorSpace)
         };
 
         EXPECT_FEQ_EPS(
-            RegularSpectrum31f::from_array(ExpectedSpectrumValues),
+            RegularSpectrum43f::from_array(ExpectedSpectrumValues),
             spectrum,
             1.0e-6f);
     }
 
     TEST_CASE(TestSpectrumToSpectrumConversion)
     {
-        static const float InputWavelength[RegularSpectrum31f::Samples] =
+        static const float InputWavelength[RegularSpectrum43f::Samples] =
         {
-            400.0f, 410.0f, 420.0f, 430.0f, 440.0f, 450.0f, 460.0f, 470.0f, 480.0f, 490.0f,
-            500.0f, 510.0f, 520.0f, 530.0f, 540.0f, 550.0f, 560.0f, 570.0f, 580.0f, 590.0f,
-            600.0f, 610.0f, 620.0f, 630.0f, 640.0f, 650.0f, 660.0f, 670.0f, 680.0f, 690.0f,
-            700.0f
+            360.0f, 370.0f, 380.0f, 390.0f, 400.0f, 410.0f, 420.0f, 430.0f, 440.0f, 450.0f,
+            460.0f, 470.0f, 480.0f, 490.0f, 500.0f, 510.0f, 520.0f, 530.0f, 540.0f, 550.0f,
+            560.0f, 570.0f, 580.0f, 590.0f, 600.0f, 610.0f, 620.0f, 630.0f, 640.0f, 650.0f,
+            660.0f, 670.0f, 680.0f, 690.0f, 700.0f, 710.0f, 720.0f, 730.0f, 740.0f, 750.0f,
+            760.0f, 770.0f, 780.0f
         };
-        const RegularSpectrum31f input_spectrum = get_white_spectrum();
+        const RegularSpectrum43f input_spectrum = get_white_spectrum();
 
         typedef RegularSpectrum<float, 4> RegularSpectrum4f;
 
