@@ -40,7 +40,6 @@
 #include "renderer/modeling/input/source.h"
 #include "renderer/modeling/input/sourceinputs.h"
 #include "renderer/modeling/light/sunlight.h"
-#include "renderer/modeling/light/Hosek_sun.h"
 #include "renderer/utility/transformsequence.h"
 
 // appleseed.foundation headers.
@@ -134,7 +133,7 @@ namespace
             m_inputs.evaluate_uniforms(&m_uniform_values);
 
             // If there is a bound sun get it.
-            m_sun = dynamic_cast<HosekSunLight*>(m_inputs.get_entity("sun_light"));
+            m_sun = dynamic_cast<SunLight*>(m_inputs.get_entity("sun_light"));
 
             // Compute the sun direction.
             m_sun_theta = deg_to_rad(m_uniform_values.m_sun_theta);
@@ -278,7 +277,7 @@ namespace
         float                       m_uniform_coeffs[3 * 9];
         float                       m_uniform_master_Y[3];
 
-        HosekSunLight*                   m_sun;
+        SunLight*                   m_sun;
 
         // Compute the coefficients of the radiance distribution function and the master luminance value.
         static void compute_coefficients(

@@ -1,5 +1,3 @@
-#include "Hosek_sun.h"
-
 
 //
 // This source file is part of appleseed.
@@ -30,7 +28,7 @@
 //
 
 // Interface header.
-#include "Hosek_sun.h"
+#include "HosekSun.h"
 
 // appleseed.renderer headers.
 #include "renderer/global/globaltypes.h"
@@ -89,15 +87,20 @@ namespace renderer
 
         // Sun's radius, in millions of km.
         // Reference: https://en.wikipedia.org/wiki/Solar_radius
-        constexpr  float SunRadius = 0.6957f;
+        constexpr float SunRadius = 0.6957f;
 
-        constexpr float solid_angle_sun = 6.807e-5f;
+        constexpr float SolidAngleSun = 6.807e-5f;
     }
 
-    HosekSunLight::HosekSunLight(
-        const char* name,
-        const ParamArray& params)
-        : Light(name, params)
+class HosekSunLight
+    :public SunLight
+{
+  public:
+
+    HosekSunLight(
+        const char*                 name,
+        const ParamArray&           params)
+      : SunLight(name, params)
     {
         m_inputs.declare("environment_edf", InputFormat::Entity, "");
         m_inputs.declare("turbidity", InputFormat::Float);
@@ -106,78 +109,36 @@ namespace renderer
         m_inputs.declare("distance", InputFormat::Float, "149.6");
     }
 
-    void HosekSunLight::release()
+    void release() override
     {
         delete this;
     }
 
-    const char* HosekSunLight::get_model() const
+    const char* get_model() const override
     {
         return Model;
     }
 
-    bool HosekSunLight::on_frame_begin(
-        const Project& project,
-        const BaseGroup* parent,
-        OnFrameBeginRecorder& recorder,
-        IAbortSwitch* abort_switch)
+    bool on_frame_begin(
+        const Project&              project,
+        const BaseGroup*            parent,
+        OnFrameBeginRecorder&       recorder,
+        IAbortSwitch*               abort_switch) override
     {
-        if (!Light::on_frame_begin(project, parent, recorder, abort_switch))
+        if (!SunLight::on_frame_begin(project, parent, recorder, abort_switch))
             return false;
-
-        // Check if sun disk is visible.
-        m_visible = m_params.get_optional<bool>("visible", true);
-
-        // Evaluate uniform inputs.
-        m_inputs.evaluate_uniforms(&m_values);
-
-        // Warn if distance input is not uniform.
-        Source* distance_src = get_inputs().source("distance");
-        assert(distance_src != nullptr);
-        if (!distance_src->is_uniform())
-        {
-            RENDERER_LOG_WARNING(
-                "distance between sun and scene \"%s\" is not uniform, using default value of 149.6 million km.",
-                get_path().c_str());
-            m_values.m_distance = 149.6f;
-        }
-
-        // Warn if size multiplier input is not uniform.
-        const Source* size_multiplier_src = get_inputs().source("size_multiplier");
-        assert(size_multiplier_src != nullptr);
-        if (!size_multiplier_src->is_uniform())
-        {
-            RENDERER_LOG_WARNING(
-                "size multiplier of the sun light \"%s\" is not uniform.",
-                get_path().c_str());
-            m_values.m_size_multiplier = 1.0f;
-        }
-
-        // Compute the Sun's solid angle.
-        // Reference: https://en.wikipedia.org/wiki/Solid_angle#Sun_and_Moon
-        m_sun_solid_angle = TwoPi<float>() * (1.0f - std::cos(std::atan(SunRadius * m_values.m_size_multiplier / m_values.m_distance)));
-
-        // If the Sun light is bound to an environment EDF, let it override the Sun's direction and turbidity.
-        EnvironmentEDF* env_edf = dynamic_cast<EnvironmentEDF*>(m_inputs.get_entity("environment_edf"));
-        if (env_edf != nullptr)
-            apply_env_edf_overrides(env_edf);
-
-        const Scene::RenderData& scene_data = project.get_scene()->get_render_data();
-        m_scene_center = Vector3d(scene_data.m_center);
-        m_scene_radius = scene_data.m_radius;
-        m_safe_scene_diameter = scene_data.m_safe_diameter;
 
         return true;
     }
 
-    void HosekSunLight::sample(
-        const ShadingContext& shading_context,
-        const Transformd& light_transform,
-        const Vector2d& s,
-        Vector3d& position,
-        Vector3d& outgoing,
-        Spectrum& value,
-        float& probability) const
+    void sample(
+        const ShadingContext&       shading_context,
+        const Transformd&           light_transform,
+        const Vector2d&             s,
+        Vector3d&                   position,
+        Vector3d&                   outgoing,
+        Spectrum&                   value,
+        float&                      probability) const override
     {
         // todo: we need to choose a random direction as well in order to get
         // soft shadows when using photon mapping.
@@ -192,15 +153,15 @@ namespace renderer
             probability);
     }
 
-    void HosekSunLight::sample(
-        const ShadingContext& shading_context,
-        const Transformd& light_transform,
-        const Vector3d& target_point,
-        const Vector2d& s,
-        Vector3d& position,
-        Vector3d& outgoing,
-        Spectrum& value,
-        float& probability) const
+    void sample(
+        const ShadingContext&       shading_context,
+        const Transformd&           light_transform,
+        const Vector3d&             target_point,
+        const Vector2d&             s,
+        Vector3d&                   position,
+        Vector3d&                   outgoing,
+        Spectrum&                   value,
+        float&                      probability) const override
     {
         sample_sun_surface(
             light_transform,
@@ -212,15 +173,15 @@ namespace renderer
             probability);
     }
 
-    void HosekSunLight::sample(
-        const ShadingContext& shading_context,
-        const Transformd& light_transform,
-        const Vector2d& s,
-        const LightTargetArray& targets,
-        Vector3d& position,
-        Vector3d& outgoing,
-        Spectrum& value,
-        float& probability) const
+    void sample(
+        const ShadingContext&       shading_context,
+        const Transformd&           light_transform,
+        const Vector2d&             s,
+        const LightTargetArray&     targets,
+        Vector3d&                   position,
+        Vector3d&                   outgoing,
+        Spectrum&                   value,
+        float&                      probability) const override
     {
         const size_t target_count = targets.size();
 
@@ -255,16 +216,9 @@ namespace renderer
         }
     }
 
-    float HosekSunLight::compute_distance_attenuation(
-        const Vector3d& target,
-        const Vector3d& position) const
-    {
-        return 1.0f;
-    }
-
-    void HosekSunLight::evaluate(
-        const Vector3d& outgoing,
-        Spectrum& value)
+    void evaluate(
+        const Vector3d&             outgoing,
+        Spectrum&                   value) const override
     {
         assert(is_normalized(outgoing));
 
@@ -277,7 +231,7 @@ namespace renderer
         const Vector3d local_outgoing = normalize(get_transform().point_to_local(outgoing));
         const double angle = std::acos(dot(local_outgoing, Vector3d(0.0, 0.0, 1.0)));
 
-        const double max_angle = SunRadius * m_values.m_size_multiplier / m_values.m_distance;
+        const double max_angle = m_sun_size / m_values.m_distance;
 
         if (angle > std::atan(max_angle))
         {
@@ -299,12 +253,14 @@ namespace renderer
         value /= m_sun_solid_angle;
     }
 
-    void HosekSunLight::compute_sun_radiance(
-        const Vector3d&         outgoing,
-        const float             turbidity,
-        const float             radiance_multiplier,
-        RegularSpectrum43f&     radiance,
-        const float             squared_distance_to_center) const
+  private:
+
+    void compute_sun_radiance(
+        const Vector3d&             outgoing,
+        const float                 turbidity,
+        const float                 radiance_multiplier,
+        RegularSpectrum43f&         radiance,
+        const float                 squared_distance_to_center = 0.0f) const
     {
         const float cos_theta = -static_cast<float>(outgoing.y);
         const float sun_theta = std::acos(cos_theta);
@@ -314,23 +270,7 @@ namespace renderer
             turbidity,
             sun_theta);
 
-        // Limb darkening.
-        //
-        // Reference:
-        //
-        //   Lintu, Andrei & Haber, Jörg & Magnor, Marcus.
-        //   (2005). Realistic Solar Disc Rendering.
-        //   http://wscg.zcu.cz/wscg2005/Papers_2005/Full/F17-full.pdf
-        //
-
-        constexpr float LimbDarkeningCoeficent = 0.6f; // Limb darkening coefficient for the sun for visible HosekSunLight.
-        float limb_darkening = 1.0f;
-        if (squared_distance_to_center > 0.0f)
-        {
-            limb_darkening = (1.0f - LimbDarkeningCoeficent *
-                (1.0f - std::sqrt(1.0f - squared_distance_to_center
-                / square(SunRadius * m_values.m_size_multiplier))));
-        }
+        float limb_darkening = compute_limb_darkening(squared_distance_to_center);
 
         // Compute the attenuated radiance of the Sun.
         for (size_t i = 0; i < 43; ++i)
@@ -338,62 +278,14 @@ namespace renderer
             radiance[i] *=
                 limb_darkening *
                 radiance_multiplier *
-                solid_angle_sun;
+                SolidAngleSun;
         }
     }
 
-    void HosekSunLight::apply_env_edf_overrides(EnvironmentEDF* env_edf)
-    {
-        env_edf->get_inputs().find("sun_light").bind(this);
-
-        // Use the Sun direction from the EDF if it has one.
-        const Source* sun_theta_src = env_edf->get_inputs().source("sun_theta");
-        const Source* sun_phi_src = env_edf->get_inputs().source("sun_phi");
-        const Source* sun_shift_src = env_edf->get_inputs().source("horizon_shift");
-        if (sun_theta_src != nullptr &&
-            sun_theta_src->is_uniform() &&
-            sun_phi_src != nullptr &&
-            sun_phi_src->is_uniform() &&
-            sun_shift_src != nullptr &&
-            sun_shift_src->is_uniform())
-        {
-            float sun_theta, sun_phi, sun_shift;
-            sun_theta_src->evaluate_uniform(sun_theta);
-            sun_phi_src->evaluate_uniform(sun_phi);
-            sun_shift_src->evaluate_uniform(sun_shift);
-
-            Transformd scratch;
-            const Transformd& env_edf_transform = env_edf->transform_sequence().evaluate(0.0f, scratch);
-
-            set_transform(
-                Transformd::from_local_to_parent(
-                    Matrix4d::make_translation(Vector3d(0.0, sun_shift, 0.0)) *
-                    Matrix4d::make_rotation(
-                        Quaterniond::make_rotation(
-                            Vector3d(0.0, 0.0, -1.0),   // default emission direction of this light
-                            -Vector3d::make_unit_vector(deg_to_rad(sun_theta), deg_to_rad(sun_phi))))) *
-                env_edf_transform);
-        }
-
-        // Use the Sun turbidity from the EDF if it has one.
-        const Source* turbidity_src = env_edf->get_inputs().source("turbidity");
-        const Source* turbidity_multiplier_src = env_edf->get_inputs().source("turbidity_multiplier");
-        if (turbidity_src != nullptr &&
-            turbidity_src->is_uniform() &&
-            turbidity_multiplier_src != nullptr &&
-            turbidity_multiplier_src->is_uniform())
-        {
-            float turbidity_multiplier;
-            turbidity_multiplier_src->evaluate_uniform(turbidity_multiplier);
-            turbidity_src->evaluate_uniform(m_values.m_turbidity);
-            m_values.m_turbidity *= turbidity_multiplier;
-        }
-    }
-
-    float HosekSunLight::compute_coefficients2(
-        int                     turbidity,
-        int                     wl,
-        double                   elevation) const
+    float compute_coefficients2(
+        int                         turbidity,
+        int                         wl,
+        double                      elevation) const
     {
         constexpr int Pieces = 45;
         constexpr int Order = 4;
@@ -422,10 +314,10 @@ namespace renderer
         return static_cast<float>(res);
     }
 
-    void HosekSunLight::compute_coefficients(
-        RegularSpectrum43f&     radiance,
-        const float             turbidity,
-        const float             sun_theta) const
+    void compute_coefficients(
+        RegularSpectrum43f&         radiance,
+        const float                 turbidity,
+        const float                 sun_theta) const
     {
         const float clamped_turbidity = clamp(turbidity, 1.0f, 10.0f);
         int turbidity_low = truncate<int>(clamped_turbidity) - 1;
@@ -450,7 +342,7 @@ namespace renderer
             }
 
             int   wl_low = (int)((wavelength - 320.0f) / 40.0f);
-            float wl_frac =  fmod(wavelength, 40.0f) / 40.0f;
+            float wl_frac = fmod(wavelength, 40.0f) / 40.0f;
 
             if (wl_low >= 10)
             {
@@ -464,19 +356,19 @@ namespace renderer
                     + wl_frac * compute_coefficients2(turbidity_low, wl_low + 1, eta))
                 + turbidity_frac *
                 ((1.0f - wl_frac) * compute_coefficients2(turbidity_low + 1, wl_low, eta)
-                    + wl_frac * compute_coefficients2(turbidity_low + 1 , wl_low + 1, eta));
+                    + wl_frac * compute_coefficients2(turbidity_low + 1, wl_low + 1, eta));
         }
     }
 
-    void HosekSunLight::sample_disk(
-        const Transformd&       light_transform,
-        const Vector2d&         s,
-        const Vector3d&         disk_center,
-        const double            disk_radius,
-        Vector3d&               position,
-        Vector3d&               outgoing,
-        Spectrum&               value,
-        float&                  probability) const
+    void sample_disk(
+        const Transformd&           light_transform,
+        const Vector2d&             s,
+        const Vector3d&             disk_center,
+        const double                disk_radius,
+        Vector3d&                   position,
+        Vector3d&                   outgoing,
+        Spectrum&                   value,
+        float&                      probability) const
     {
         outgoing = -normalize(light_transform.get_parent_z());
 
@@ -512,14 +404,14 @@ namespace renderer
         value.set(radiance, g_std_lighting_conditions, Spectrum::Illuminance);
     }
 
-    void HosekSunLight::sample_sun_surface(
-        const Transformd&       light_transform,
-        const Vector3d&         target_point,
-        const Vector2d&         s,
-        Vector3d&               position,
-        Vector3d&               outgoing,
-        Spectrum&               value,
-        float&                  probability) const
+    void sample_sun_surface(
+        const Transformd&           light_transform,
+        const Vector3d&             target_point,
+        const Vector2d&             s,
+        Vector3d&                   position,
+        Vector3d&                   outgoing,
+        Spectrum&                   value,
+        float&                      probability) const
     {
         assert(m_safe_scene_diameter > 0.0);
 
@@ -528,8 +420,7 @@ namespace renderer
         // tan(angular_diameter / 2) * distance = sun_radius
         // tan(angular_diameter / 2) * scene_diameter = virtual_sun_radius
         // -> virtual_sun_radius = sun_radius * scene_diameter / distance
-        double sun_radius = SunRadius * m_safe_scene_diameter / m_values.m_distance;
-        sun_radius *= m_values.m_size_multiplier;
+        double sun_radius = m_sun_size * m_safe_scene_diameter / m_values.m_distance;
 
         outgoing = -normalize(light_transform.get_parent_z());
 
@@ -543,7 +434,7 @@ namespace renderer
             + sun_radius * p[1] * basis.get_tangent_v();
 
         outgoing = normalize(target_point - position);
-        Vector2d test = static_cast<double>(SunRadius * m_values.m_size_multiplier) * p;
+        Vector2d test = static_cast<double>(m_sun_size) * p;
         double squared_distance_to_center = test[0] * test[0] + test[1] * test[1];
 
 
@@ -584,6 +475,7 @@ namespace renderer
         probability = 1.0f;
     }
 
+};
 
     //
     // HosekSunLightFactory class implementation.
@@ -605,7 +497,7 @@ namespace renderer
             Dictionary()
             .insert("name", Model)
             .insert("label", "Hosek Sun Light")
-            .insert("help", "Physically-based sun light");
+            .insert("help", "Hosek's Physically-based sun light");
     }
 
     DictionaryArray HosekSunLightFactory::get_input_metadata() const
