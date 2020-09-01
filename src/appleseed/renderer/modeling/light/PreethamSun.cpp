@@ -37,7 +37,7 @@
 #include "renderer/modeling/input/inputarray.h"
 #include "renderer/modeling/input/source.h"
 #include "renderer/modeling/light/lighttarget.h"
-#include "renderer/modeling/light/sunLight.h"
+#include "renderer/modeling/light/sunlight.h"
 #include "renderer/modeling/project/project.h"
 #include "renderer/modeling/scene/scene.h"
 
